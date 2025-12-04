@@ -1,0 +1,24 @@
+[Unit]
+Description=Read-to-Unlock Kindle Scraper (One-shot)
+Documentation=https://github.com/yourusername/read-to-unlock
+After=network.target
+
+[Service]
+Type=oneshot
+User=%USER%
+Group=%USER%
+WorkingDirectory=%PROJECT_DIR%
+Environment=PATH=%PROJECT_DIR%/venv/bin:/usr/bin:/bin
+ExecStart=%PROJECT_DIR%/venv/bin/python -c "import asyncio; from src.scraper import run_scrape; print(asyncio.run(run_scrape()))"
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%PROJECT_DIR%/data
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=read-to-unlock-scraper

@@ -1,0 +1,29 @@
+[Unit]
+Description=Read-to-Unlock API Server
+Documentation=https://github.com/yourusername/read-to-unlock
+After=network.target
+
+[Service]
+Type=simple
+User=%USER%
+Group=%USER%
+WorkingDirectory=%PROJECT_DIR%
+Environment=PATH=%PROJECT_DIR%/venv/bin:/usr/bin:/bin
+ExecStart=%PROJECT_DIR%/venv/bin/python -m uvicorn src.main:app --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=10
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%PROJECT_DIR%/data
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=read-to-unlock
+
+[Install]
+WantedBy=multi-user.target

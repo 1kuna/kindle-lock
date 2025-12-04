@@ -1,0 +1,17 @@
+[Unit]
+Description=Read-to-Unlock Kindle Scraper Timer
+Documentation=https://github.com/yourusername/read-to-unlock
+
+[Timer]
+# Run every 30 minutes
+OnBootSec=5min
+OnUnitActiveSec=30min
+
+# Randomize execution time slightly to avoid exact intervals
+RandomizedDelaySec=60
+
+# Persist timer across reboots
+Persistent=true
+
+[Install]
+WantedBy=timers.target
