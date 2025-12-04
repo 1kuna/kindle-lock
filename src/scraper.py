@@ -280,6 +280,31 @@ class KindleScraper:
 
             await asyncio.sleep(3)  # Let content settle
 
+            # Check for "License Limit Reached" dialog
+            license_dialog = await self.page.evaluate(r"""
+                () => {
+                    const bodyText = document.body.innerText || '';
+                    if (bodyText.includes('License Limit Reached') ||
+                        bodyText.includes('exceeded the limit on the number of devices')) {
+                        return true;
+                    }
+                    return false;
+                }
+            """)
+            if license_dialog:
+                logger.warning(f"Book {asin}: License limit reached - too many devices. Deregister a device to read this book.")
+                # Try to close dialog and return to library
+                try:
+                    ok_btn = self.page.locator('button:has-text("Ok"), button:has-text("OK")')
+                    if await ok_btn.count() > 0:
+                        await ok_btn.first.click()
+                        await asyncio.sleep(1)
+                except Exception:
+                    pass
+                await self.page.goto(self.LIBRARY_URL, wait_until="networkidle")
+                await asyncio.sleep(2)
+                return {"error": "license_limit"}
+
             # Tap/click center of page to reveal UI elements (progress bar, page numbers)
             # Kindle Cloud Reader hides UI until you tap
             try:
@@ -631,6 +656,7 @@ class KindleScraper:
             # Get library list (basic metadata)
             books = await self.get_library_and_progress()
             books_with_progress = 0
+            books_with_license_limit = []
 
             # Open each book to get actual page numbers
             # Library page doesn't show page numbers - only visible when book is opened
@@ -650,6 +676,12 @@ class KindleScraper:
                 # Open book to get actual page progress
                 logger.info(f"Opening book to get progress: {title}...")
                 progress = await self.get_book_progress_from_reader(asin)
+
+                # Check for license limit error
+                if progress and progress.get("error") == "license_limit":
+                    books_with_license_limit.append(title)
+                    logger.info(f"  -> License limit (too many devices)")
+                    continue
 
                 if progress and progress.get("current") is not None:
                     current_page = progress["current"]
@@ -678,13 +710,18 @@ class KindleScraper:
                     logger.info(f"  -> No progress data found")
 
             logger.info(f"Successfully scraped {len(books)} books, {books_with_progress} with progress")
+            if books_with_license_limit:
+                logger.warning(f"Books with license limit issues: {', '.join(books_with_license_limit)}")
 
-            return {
+            result = {
                 "success": True,
                 "books_scraped": len(books),
                 "books_with_progress": books_with_progress,
                 "timestamp": datetime.now().isoformat(),
             }
+            if books_with_license_limit:
+                result["license_limit_books"] = books_with_license_limit
+            return result
 
         except Exception as e:
             logger.error(f"Scrape failed: {e}", exc_info=True)
