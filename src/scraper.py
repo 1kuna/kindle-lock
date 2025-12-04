@@ -255,6 +255,158 @@ class KindleScraper:
 
         logger.info("Login successful")
 
+    async def get_book_progress_from_reader(self, asin: str) -> dict:
+        """
+        Open a book and extract its current page/location and total pages.
+        Returns dict with 'current', 'total', 'percent'.
+        """
+        try:
+            # Click on the book to open it
+            book_el = self.page.locator(f'#library-item-option-{asin}')
+            if await book_el.count() == 0:
+                logger.warning(f"Book {asin} not found in library")
+                return {}
+
+            await book_el.click()
+
+            # Wait for reader to load - look for reader-specific elements
+            try:
+                await self.page.wait_for_selector(
+                    '#kindle-reader, [class*="reader"], [class*="Reader"], iframe[id*="reader"]',
+                    timeout=10000,
+                )
+            except Exception:
+                logger.debug(f"Reader container not found for {asin}, checking page anyway")
+
+            await asyncio.sleep(3)  # Let content settle
+
+            # Tap/click center of page to reveal UI elements (progress bar, page numbers)
+            # Kindle Cloud Reader hides UI until you tap
+            try:
+                viewport = self.page.viewport_size
+                if viewport:
+                    await self.page.mouse.click(viewport["width"] // 2, viewport["height"] // 2)
+                    await asyncio.sleep(1)
+            except Exception as e:
+                logger.debug(f"Center click failed: {e}")
+
+            # Look for page/location info in the reader
+            progress_info = await self.page.evaluate(r"""
+                () => {
+                    const result = {current: null, total: null, percent: null, debug: []};
+
+                    // Helper to search for patterns in text
+                    const findPattern = (text) => {
+                        // "Page X of Y" pattern
+                        let match = text.match(/Page\s+(\d+)\s+of\s+(\d+)/i);
+                        if (match) {
+                            return {current: parseInt(match[1]), total: parseInt(match[2]), type: 'page'};
+                        }
+
+                        // "Loc X of Y" or "Location X of Y" pattern
+                        match = text.match(/Loc(?:ation)?\s+(\d+)\s+of\s+(\d+)/i);
+                        if (match) {
+                            return {current: parseInt(match[1]), total: parseInt(match[2]), type: 'location'};
+                        }
+
+                        // "X of Y" pattern (standalone)
+                        match = text.match(/^(\d+)\s+of\s+(\d+)$/i);
+                        if (match) {
+                            return {current: parseInt(match[1]), total: parseInt(match[2]), type: 'generic'};
+                        }
+
+                        // Percentage pattern
+                        match = text.match(/(\d+)%/);
+                        if (match) {
+                            return {percent: parseInt(match[1]), type: 'percent'};
+                        }
+
+                        return null;
+                    };
+
+                    // Search specific elements that might contain progress
+                    const progressSelectors = [
+                        '[class*="location"]',
+                        '[class*="Location"]',
+                        '[class*="page"]',
+                        '[class*="Page"]',
+                        '[class*="progress"]',
+                        '[class*="Progress"]',
+                        '[class*="position"]',
+                        '[class*="Position"]',
+                        '[id*="location"]',
+                        '[id*="page"]',
+                        '[id*="progress"]',
+                        '[data-page]',
+                        '[data-location]',
+                        // Kindle Cloud Reader specific
+                        '#kindleReader_footer',
+                        '.kindleReader_pageTurnAreaRight',
+                        '.kindleReader_footer',
+                        '[class*="footer"]',
+                        '[class*="Footer"]',
+                    ];
+
+                    for (const selector of progressSelectors) {
+                        const elements = document.querySelectorAll(selector);
+                        for (const el of elements) {
+                            const text = (el.textContent || el.innerText || '').trim();
+                            if (text.length > 0 && text.length < 50) {
+                                result.debug.push({selector, text: text.substring(0, 50)});
+                                const found = findPattern(text);
+                                if (found) {
+                                    if (found.current !== undefined) {
+                                        result.current = found.current;
+                                        result.total = found.total;
+                                        result.percent = Math.round((found.current / found.total) * 100);
+                                    } else if (found.percent !== undefined) {
+                                        result.percent = found.percent;
+                                        result.current = found.percent;
+                                        result.total = 100;
+                                    }
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+
+                    // Fallback: search entire page body
+                    const bodyText = document.body.innerText || '';
+                    const found = findPattern(bodyText);
+                    if (found) {
+                        if (found.current !== undefined) {
+                            result.current = found.current;
+                            result.total = found.total;
+                            result.percent = Math.round((found.current / found.total) * 100);
+                        } else if (found.percent !== undefined) {
+                            result.percent = found.percent;
+                            result.current = found.percent;
+                            result.total = 100;
+                        }
+                    }
+
+                    return result;
+                }
+            """)
+
+            if progress_info.get("debug"):
+                logger.debug(f"Book {asin} found elements: {progress_info['debug'][:3]}")
+
+            # Go back to library
+            await self.page.goto(self.LIBRARY_URL, wait_until="networkidle")
+            await asyncio.sleep(2)
+
+            return progress_info
+
+        except Exception as e:
+            logger.warning(f"Failed to get progress for {asin}: {e}")
+            # Try to get back to library
+            try:
+                await self.page.goto(self.LIBRARY_URL, wait_until="networkidle")
+            except:
+                pass
+            return {}
+
     async def get_library_and_progress(self) -> list[dict]:
         """
         Extract library and reading progress from Kindle Cloud Reader.
@@ -287,8 +439,49 @@ class KindleScraper:
 
         await asyncio.sleep(2)  # Let dynamic content settle
 
+        # Try to get progress data from the page's JavaScript context
+        # Kindle Cloud Reader stores book data in window/React state
+        progress_data = await self.page.evaluate("""
+            () => {
+                // Try to find progress data in various places
+                const progressMap = {};
+
+                // Method 1: Look for React fiber data
+                try {
+                    const libraryEl = document.querySelector('[class*="library"]');
+                    if (libraryEl && libraryEl._reactRootContainer) {
+                        // React 16/17
+                        console.log('Found React root container');
+                    }
+                } catch (e) {}
+
+                // Method 2: Look for data in window object
+                try {
+                    if (window.KindleLibraryStore) {
+                        console.log('Found KindleLibraryStore');
+                    }
+                    if (window.__PRELOADED_STATE__) {
+                        console.log('Found preloaded state');
+                    }
+                } catch (e) {}
+
+                // Method 3: Look for localStorage data
+                try {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.includes('progress') || key.includes('percent') || key.includes('reading')) {
+                            console.log('localStorage key:', key);
+                        }
+                    }
+                } catch (e) {}
+
+                return progressMap;
+            }
+        """)
+        logger.info(f"Progress data lookup result: {progress_data}")
+
         # Extract books from DOM - ASINs are in element IDs like "library-item-option-B0192CTMYG"
-        books_data = await self.page.evaluate("""
+        books_data = await self.page.evaluate(r"""
             () => {
                 const books = [];
 
@@ -339,16 +532,50 @@ class KindleScraper:
 
                     // Try to find progress percentage
                     let percentComplete = 0;
-                    const progressEl = item.querySelector('[class*="progress"], [class*="Progress"]');
-                    if (progressEl) {
-                        const progressText = progressEl.textContent;
-                        const match = progressText.match(/(\\d+)%/);
+
+                    // Method 1: Look for percentage-read element by ID (found in aria-labelledby)
+                    const percentReadEl = document.getElementById('percentage-read-' + asin);
+                    if (percentReadEl) {
+                        const percentText = percentReadEl.textContent || percentReadEl.innerText || '';
+                        const match = percentText.match(/(\d+)/);
                         if (match) {
                             percentComplete = parseFloat(match[1]);
                         }
                     }
 
+                    // Method 2: Look for element with progress in class name
+                    if (percentComplete === 0) {
+                        const progressEl = item.querySelector('[class*="progress"], [class*="Progress"], [id*="percent"]');
+                        if (progressEl) {
+                            const progressText = progressEl.textContent;
+                            const match = progressText.match(/(\d+)/);
+                            if (match) {
+                                percentComplete = parseFloat(match[1]);
+                            }
+                        }
+                    }
+
+                    // Method 3: Search entire item for percentage pattern
+                    if (percentComplete === 0) {
+                        const allText = item.innerText || item.textContent || '';
+                        const percentMatch = allText.match(/(\d+)%/);
+                        if (percentMatch) {
+                            percentComplete = parseFloat(percentMatch[1]);
+                        }
+                    }
+
+                    // Debug: check percentage element for first book
+                    let debugPercentEl = null;
+                    if (books.length === 0) {
+                        const pEl = document.getElementById('percentage-read-' + asin);
+                        debugPercentEl = pEl ? pEl.outerHTML : 'NOT FOUND';
+                    }
+
                     books.push({
+                        // Include debug info for first book
+                        _debug_html: books.length === 0 ? item.outerHTML.substring(0, 500) : null,
+                        _debug_text: books.length === 0 ? item.innerText : null,
+                        _debug_percent_el: debugPercentEl,
                         asin: asin,
                         title: title,
                         authors: authors,
@@ -366,12 +593,20 @@ class KindleScraper:
 
         logger.info(f"Found {len(books_data)} library items with ID pattern")
 
+        # Debug: log a sample of extracted data
+        if books_data:
+            first = books_data[0]
+            logger.info(f"First book debug - Percent element: {first.get('_debug_percent_el', 'N/A')}")
+        for book in books_data[:3]:
+            logger.info(f"Sample book: {book['asin']} - {book['title'][:30]}... - {book['percentComplete']}%")
+
         logger.info(f"Extracted {len(books_data)} books from Kindle Cloud Reader")
         return books_data
 
     async def scrape_and_save(self) -> dict:
         """
         Main scrape operation - fetches data and saves to database.
+        Opens each book to get actual page numbers since library doesn't show them.
         Returns summary of what was scraped.
         """
         try:
@@ -393,33 +628,61 @@ class KindleScraper:
                         "timestamp": datetime.now().isoformat(),
                     }
 
+            # Get library list (basic metadata)
             books = await self.get_library_and_progress()
+            books_with_progress = 0
 
+            # Open each book to get actual page numbers
+            # Library page doesn't show page numbers - only visible when book is opened
             for book in books:
-                # Save book metadata
+                asin = book["asin"]
+                title = book["title"][:40]
+
+                # Save book metadata first
                 upsert_book(
-                    asin=book["asin"],
+                    asin=asin,
                     title=book["title"],
                     authors=book.get("authors", []),
                     total_pages=book.get("totalPages"),
                     cover_url=book.get("coverUrl"),
                 )
 
-                # Record progress if we have percentage data
-                # currentPosition is now set to percentComplete (1% = 1 "page")
-                position = book.get("currentPosition")
-                if position is not None and position > 0:
-                    record_progress(
-                        asin=book["asin"],
-                        position=int(position),
-                        percent=book.get("percentComplete", 0),
-                    )
+                # Open book to get actual page progress
+                logger.info(f"Opening book to get progress: {title}...")
+                progress = await self.get_book_progress_from_reader(asin)
 
-            logger.info(f"Successfully scraped and saved {len(books)} books")
+                if progress and progress.get("current") is not None:
+                    current_page = progress["current"]
+                    total_pages = progress.get("total", 100)
+                    percent = progress.get("percent", 0)
+
+                    # Update book with actual total pages if we got it
+                    if total_pages and total_pages != 100:
+                        upsert_book(
+                            asin=asin,
+                            title=book["title"],
+                            authors=book.get("authors", []),
+                            total_pages=total_pages,
+                            cover_url=book.get("coverUrl"),
+                        )
+
+                    # Record progress
+                    record_progress(
+                        asin=asin,
+                        position=current_page,
+                        percent=percent,
+                    )
+                    books_with_progress += 1
+                    logger.info(f"  -> Page {current_page} of {total_pages} ({percent}%)")
+                else:
+                    logger.info(f"  -> No progress data found")
+
+            logger.info(f"Successfully scraped {len(books)} books, {books_with_progress} with progress")
 
             return {
                 "success": True,
                 "books_scraped": len(books),
+                "books_with_progress": books_with_progress,
                 "timestamp": datetime.now().isoformat(),
             }
 
