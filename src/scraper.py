@@ -353,8 +353,8 @@ class KindleScraper:
                         title: title,
                         authors: authors,
                         coverUrl: coverUrl,
-                        totalPages: null,
-                        currentPosition: null,
+                        totalPages: 100,  // Treat as 100 "units" for page tracking
+                        currentPosition: percentComplete,  // Use percent as position (1% = 1 page)
                         percentComplete: percentComplete,
                         lastReadTimestamp: null
                     });
@@ -405,11 +405,13 @@ class KindleScraper:
                     cover_url=book.get("coverUrl"),
                 )
 
-                # Record progress if we have position data
-                if book.get("currentPosition") is not None:
+                # Record progress if we have percentage data
+                # currentPosition is now set to percentComplete (1% = 1 "page")
+                position = book.get("currentPosition")
+                if position is not None and position > 0:
                     record_progress(
                         asin=book["asin"],
-                        position=book["currentPosition"],
+                        position=int(position),
                         percent=book.get("percentComplete", 0),
                     )
 
