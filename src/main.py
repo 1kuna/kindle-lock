@@ -1,16 +1,18 @@
 """FastAPI application for Read-to-Unlock API."""
 
 import asyncio
+import json
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from .config import settings
 from .database import init_db, get_today_stats, get_library, get_book, get_setting, set_setting
-from .scraper import run_scrape, get_scraper, close_scraper
+from .scraper import run_scrape, run_scrape_streaming, get_scraper, close_scraper
 from .models import (
     HealthResponse,
     TodayResponse,
@@ -167,6 +169,56 @@ async def trigger_refresh(
     if result["success"]:
         last_scrape_time = result["timestamp"]
     return RefreshResponse(**result)
+
+
+@app.post("/refresh/stream")
+async def trigger_refresh_stream(
+    authorized: bool = Depends(verify_api_key),
+) -> StreamingResponse:
+    """
+    Trigger a scrape refresh with SSE streaming progress updates.
+
+    Returns Server-Sent Events with the following event types:
+    - started: Scrape initiated, includes total_books count
+    - book_progress: Currently processing a book
+    - book_complete: Finished processing a book
+    - error: An error occurred
+    - completed: Scrape finished, includes summary
+
+    Each event is a JSON object with an 'event' field indicating the type.
+    """
+    global last_scrape_time
+
+    async def sse_event_generator():
+        """Generate SSE-formatted events from scraper."""
+        try:
+            async for event in run_scrape_streaming():
+                # Update last_scrape_time if completed successfully
+                if event.get("event") == "completed" and event.get("success"):
+                    global last_scrape_time
+                    last_scrape_time = event.get("timestamp")
+
+                # Format as SSE: data: {json}\n\n
+                data = json.dumps(event)
+                yield f"data: {data}\n\n"
+        except Exception as e:
+            logger.error(f"SSE stream error: {e}", exc_info=True)
+            error_event = json.dumps({
+                "event": "error",
+                "message": str(e),
+                "recoverable": False,
+            })
+            yield f"data: {error_event}\n\n"
+
+    return StreamingResponse(
+        sse_event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",  # Disable nginx buffering if applicable
+        },
+    )
 
 
 @app.get("/settings", response_model=SettingsResponse)

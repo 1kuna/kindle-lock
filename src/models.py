@@ -64,3 +64,59 @@ class SettingsUpdate(BaseModel):
 
     daily_page_goal: Optional[int] = None
     day_reset_hour: Optional[int] = None
+
+
+# =============================================================================
+# SSE Streaming Events for /refresh/stream endpoint
+# =============================================================================
+
+
+class ScrapeStartedEvent(BaseModel):
+    """Emitted when scrape begins."""
+
+    event: str = "started"
+    total_books: int
+    timestamp: str
+
+
+class BookProgressEvent(BaseModel):
+    """Emitted before processing each book."""
+
+    event: str = "book_progress"
+    current: int
+    total: int
+    book_title: str
+    book_asin: str
+
+
+class BookCompleteEvent(BaseModel):
+    """Emitted after processing each book."""
+
+    event: str = "book_complete"
+    current: int
+    total: int
+    book_title: str
+    book_asin: str
+    percent_complete: Optional[float] = None
+    success: bool = True
+    error: Optional[str] = None
+
+
+class ScrapeErrorEvent(BaseModel):
+    """Emitted when a fatal error occurs."""
+
+    event: str = "error"
+    message: str
+    recoverable: bool = False
+
+
+class ScrapeCompletedEvent(BaseModel):
+    """Emitted when scrape completes successfully."""
+
+    event: str = "completed"
+    success: bool
+    books_scraped: int
+    books_with_progress: int
+    duration_seconds: float
+    timestamp: str
+    license_limit_books: Optional[list[str]] = None

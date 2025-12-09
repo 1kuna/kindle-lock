@@ -731,6 +731,155 @@ class KindleScraper:
                 "timestamp": datetime.now().isoformat(),
             }
 
+    async def scrape_and_save_streaming(self):
+        """
+        Streaming scrape operation - yields SSE events as each book is processed.
+
+        Yields dicts with 'event' key:
+        - started: total_books, timestamp
+        - book_progress: current, total, book_title, book_asin
+        - book_complete: current, total, book_title, book_asin, percent_complete, success, error
+        - error: message, recoverable
+        - completed: success, books_scraped, books_with_progress, duration_seconds, timestamp
+        """
+        import time
+        start_time = time.time()
+
+        try:
+            login_status = await self.is_logged_in()
+            if login_status == "2fa":
+                yield {
+                    "event": "error",
+                    "message": "2FA/verification required. Run 'make login' with BROWSER_HEADLESS=false to complete manually.",
+                    "recoverable": False,
+                }
+                return
+            elif not login_status:
+                logger.warning("Not logged in - attempting login")
+                if settings.amazon_email and settings.amazon_password:
+                    await self.login(settings.amazon_email, settings.amazon_password)
+                else:
+                    yield {
+                        "event": "error",
+                        "message": "Not logged in and no credentials configured",
+                        "recoverable": False,
+                    }
+                    return
+
+            # Get library list (basic metadata)
+            books = await self.get_library_and_progress()
+
+            # Emit started event
+            yield {
+                "event": "started",
+                "total_books": len(books),
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            books_with_progress = 0
+            books_with_license_limit = []
+
+            # Open each book to get actual page numbers
+            for idx, book in enumerate(books):
+                asin = book["asin"]
+                title = book["title"][:40]
+
+                # Emit progress event BEFORE processing
+                yield {
+                    "event": "book_progress",
+                    "current": idx + 1,
+                    "total": len(books),
+                    "book_title": title,
+                    "book_asin": asin,
+                }
+
+                # Save book metadata first
+                upsert_book(
+                    asin=asin,
+                    title=book["title"],
+                    authors=book.get("authors", []),
+                    total_pages=book.get("totalPages"),
+                    cover_url=book.get("coverUrl"),
+                )
+
+                # Open book to get actual page progress
+                logger.info(f"Opening book to get progress: {title}...")
+                progress = await self.get_book_progress_from_reader(asin)
+
+                # Determine result
+                success = True
+                error = None
+                percent_complete = None
+
+                # Check for license limit error
+                if progress and progress.get("error") == "license_limit":
+                    books_with_license_limit.append(title)
+                    logger.info(f"  -> License limit (too many devices)")
+                    success = False
+                    error = "license_limit"
+                elif progress and progress.get("current") is not None:
+                    current_page = progress["current"]
+                    total_pages = progress.get("total", 100)
+                    percent = progress.get("percent", 0)
+                    percent_complete = percent
+
+                    # Update book with actual total pages if we got it
+                    if total_pages and total_pages != 100:
+                        upsert_book(
+                            asin=asin,
+                            title=book["title"],
+                            authors=book.get("authors", []),
+                            total_pages=total_pages,
+                            cover_url=book.get("coverUrl"),
+                        )
+
+                    # Record progress
+                    record_progress(
+                        asin=asin,
+                        position=current_page,
+                        percent=percent,
+                    )
+                    books_with_progress += 1
+                    logger.info(f"  -> Page {current_page} of {total_pages} ({percent}%)")
+                else:
+                    logger.info(f"  -> No progress data found")
+
+                # Emit book complete event
+                yield {
+                    "event": "book_complete",
+                    "current": idx + 1,
+                    "total": len(books),
+                    "book_title": title,
+                    "book_asin": asin,
+                    "percent_complete": percent_complete,
+                    "success": success,
+                    "error": error,
+                }
+
+            duration = time.time() - start_time
+            logger.info(f"Successfully scraped {len(books)} books, {books_with_progress} with progress")
+            if books_with_license_limit:
+                logger.warning(f"Books with license limit issues: {', '.join(books_with_license_limit)}")
+
+            # Emit completed event
+            yield {
+                "event": "completed",
+                "success": True,
+                "books_scraped": len(books),
+                "books_with_progress": books_with_progress,
+                "duration_seconds": round(duration, 1),
+                "timestamp": datetime.now().isoformat(),
+                "license_limit_books": books_with_license_limit if books_with_license_limit else None,
+            }
+
+        except Exception as e:
+            logger.error(f"Scrape failed: {e}", exc_info=True)
+            yield {
+                "event": "error",
+                "message": str(e),
+                "recoverable": False,
+            }
+
 
 # Singleton scraper instance
 _scraper: Optional[KindleScraper] = None
@@ -760,3 +909,10 @@ async def run_scrape() -> dict:
     """Run a scrape operation."""
     scraper = await get_scraper()
     return await scraper.scrape_and_save()
+
+
+async def run_scrape_streaming():
+    """Run a streaming scrape operation, yielding SSE events."""
+    scraper = await get_scraper()
+    async for event in scraper.scrape_and_save_streaming():
+        yield event
