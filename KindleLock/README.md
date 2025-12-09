@@ -7,7 +7,6 @@ An iOS 26 app using Apple's Liquid Glass design language that blocks social medi
 - macOS with Xcode 16+ (iOS 26 SDK)
 - iPhone running iOS 26+
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) for project generation
-- Raspberry Pi backend running (see parent directory)
 
 ## Setup
 
@@ -85,14 +84,13 @@ This entitlement can be requested at App Store submission time. For development,
 
 ## Configuration
 
-1. **Server URL**: Enter your Raspberry Pi's IP address (e.g., `http://192.168.1.100:8080`)
-2. **API Key**: Optional, leave empty if not configured on the server
-3. **Blocked Apps**: Select apps/categories to block using the FamilyActivityPicker
+1. **Amazon Login**: Sign in to your Amazon account to enable reading progress tracking
+2. **Blocked Apps**: Select apps/categories to block using the FamilyActivityPicker
+3. **Reading Goal**: Set your daily reading percentage goal
 
 ## Testing
 
 - **Simulator**: Screen Time APIs don't work in the simulator. Use a physical device.
-- **Local Network**: Ensure your iPhone and Pi are on the same network
 - **Shield Testing**: After selecting apps, try opening a blocked app to see the custom shield
 
 ## Troubleshooting
@@ -101,10 +99,10 @@ This entitlement can be requested at App Store submission time. For development,
 - Make sure the entitlement is properly configured
 - The user needs to grant permission in Settings > Screen Time
 
-### "Connection failed"
-- Verify the Pi backend is running: `curl http://<pi-ip>:8080/health`
-- Check firewall settings on the Pi
-- Ensure both devices are on the same network
+### "Amazon login failed"
+- Ensure you have a valid Amazon account with Kindle books
+- Try signing out and signing back in
+- Check your internet connection
 
 ### Shield not appearing
 - Shields only appear when `goalMet` is false
