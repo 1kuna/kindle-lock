@@ -1,0 +1,137 @@
+name: KindleLock
+options:
+  bundleIdPrefix: com.kindlelock
+  deploymentTarget:
+    iOS: "26.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+
+packages:
+  KindleAPI:
+    url: https://github.com/natikgadzhi/swift-kindle
+    branch: main
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: false
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  KindleLock:
+    type: application
+    platform: iOS
+    sources:
+      - path: KindleLock
+        excludes:
+          - "**/*.entitlements"
+    entitlements:
+      path: KindleLock/KindleLock.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.app
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "KindleLock connects to your reading tracker on the local network."
+        INFOPLIST_KEY_NSBonjourServices: "_http._tcp"
+        INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers: "com.kindlelock.app.refresh"
+        CODE_SIGN_ENTITLEMENTS: KindleLock/KindleLock.entitlements
+    dependencies:
+      - target: ShieldConfiguration
+        platformFilter: [iOS]
+        embed: true
+      - target: ShieldAction
+        platformFilter: [iOS]
+        embed: true
+
+  ShieldConfiguration:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShieldConfiguration
+        excludes:
+          - "**/*.entitlements"
+    entitlements:
+      path: ShieldConfiguration/ShieldConfiguration.entitlements
+    info:
+      path: ShieldConfiguration/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.app.ShieldConfiguration
+        CODE_SIGN_ENTITLEMENTS: ShieldConfiguration/ShieldConfiguration.entitlements
+        SKIP_INSTALL: YES
+        GENERATE_INFOPLIST_FILE: NO
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+
+  ShieldAction:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShieldAction
+        excludes:
+          - "**/*.entitlements"
+    entitlements:
+      path: ShieldAction/ShieldAction.entitlements
+    info:
+      path: ShieldAction/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.app.ShieldAction
+        CODE_SIGN_ENTITLEMENTS: ShieldAction/ShieldAction.entitlements
+        SKIP_INSTALL: YES
+        GENERATE_INFOPLIST_FILE: NO
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+
+  KindleAPITester:
+    type: application
+    platform: iOS
+    sources:
+      - path: KindleAPITester
+    dependencies:
+      - package: KindleAPI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.apitester
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+
+schemes:
+  KindleAPITester:
+    build:
+      targets:
+        KindleAPITester: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  KindleLock:
+    build:
+      targets:
+        KindleLock: all
+        ShieldConfiguration: all
+        ShieldAction: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
