@@ -3,8 +3,8 @@
 *.env.local
 
 # Data directory (database and browser profile)
-data/reading.db
-data/browser_profile/
+data/
+# Keep placeholder if needed: `mkdir -p data && touch data/.keep`
 
 # Python
 __pycache__/
@@ -56,3 +56,5 @@ htmlcov/
 # Logs
 *.log
 logs/
+# Debug exports
+kindlelock_debug_*.json
