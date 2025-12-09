@@ -2,6 +2,9 @@
 .env
 *.env.local
 
+# Claude Code
+CLAUDE.md
+
 # Data directory (database and browser profile)
 data/
 # Keep placeholder if needed: `mkdir -p data && touch data/.keep`
