@@ -1,0 +1,59 @@
+# Git
+.git
+.gitignore
+
+# Documentation (not needed in container)
+*.md
+docs/
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Python artifacts
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Testing and linting
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+tests/
+
+# Data directory (mounted as volume)
+data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Systemd configs (not used in Docker)
+systemd/
+
+# iOS app (separate deployment)
+KindleLock/
+
+# Scripts not needed in container
+scripts/setup.sh
+scripts/install_service.sh
+
+# Makefile (development only)
+Makefile

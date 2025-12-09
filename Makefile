@@ -1,4 +1,5 @@
 .PHONY: install install-dev dev test lint login setup clean help
+.PHONY: docker-build docker-setup docker-up docker-down docker-logs docker-shell
 
 # Default Python interpreter
 PYTHON ?= python3
@@ -19,6 +20,13 @@ help:
 	@echo "Kindle:"
 	@echo "  make login        Run interactive Amazon login helper"
 	@echo "  make scrape       Trigger a manual scrape"
+	@echo ""
+	@echo "Docker (for Raspberry Pi deployment):"
+	@echo "  make docker-build   Build Docker images"
+	@echo "  make docker-setup   Run initial Amazon login via VNC"
+	@echo "  make docker-up      Start with Cloudflare tunnel"
+	@echo "  make docker-down    Stop all containers"
+	@echo "  make docker-logs    View container logs"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean        Remove generated files"
@@ -63,3 +71,37 @@ clean:
 	rm -rf .pytest_cache .ruff_cache
 	rm -rf *.egg-info
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
+# ===========================================
+# Docker Commands (for Raspberry Pi deployment)
+# ===========================================
+
+docker-build:
+	docker compose build
+
+docker-setup:
+	@echo "Starting VNC setup for Amazon login..."
+	@echo "Open http://localhost:6080 in your browser to complete login"
+	KINDLE_SETUP_MODE=true docker compose --profile setup up
+
+docker-up:
+	docker compose --profile cloudflare up -d
+
+docker-up-tailscale:
+	docker compose --profile tailscale up -d
+
+docker-up-expose:
+	docker compose --profile expose up -d
+
+docker-down:
+	docker compose --profile cloudflare --profile tailscale --profile expose --profile setup down
+
+docker-logs:
+	docker compose logs -f kindle-lock
+
+docker-shell:
+	docker compose exec kindle-lock /bin/bash
+
+docker-clean:
+	docker compose --profile cloudflare --profile tailscale --profile expose --profile setup down -v
+	docker rmi kindle-lock-kindle-lock kindle-lock-novnc 2>/dev/null || true
