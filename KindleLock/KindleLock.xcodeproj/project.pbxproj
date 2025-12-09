@@ -1,0 +1,820 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17B7F4FC1ACCF9768D41F03D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1645B3214F001E812145D6A8 /* Assets.xcassets */; };
+		1B234F66111C122402C84F3E /* KindleAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 9D2F3CED522753897FD45F50 /* KindleAPI */; };
+		23F8CC8B65E0C2BDC0CE16DE /* KindleAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */; };
+		24EFBE58CB8E0A436C08F66F /* AmazonLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0C94A7812CB885D2D61D /* AmazonLoginView.swift */; };
+		4DF64EEEE57F139158BAA7FC /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE75FA122BE3E792BBDFD4D /* GlassCard.swift */; };
+		546B8D59AF78971E463367E5 /* KindleAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF068F9EF8A288829CF30628 /* KindleAuthService.swift */; };
+		554374D58A22FA88970B5DEE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98876D9DEFD408E98DD30CD0 /* ContentView.swift */; };
+		570605949694D08A88D5A617 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4EA0CF8CE599E5C11286E9 /* Constants.swift */; };
+		599E4556083ECBD6A229BF50 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34219F641D7640C4D8A8E9B0 /* SettingsView.swift */; };
+		5D7C8ACFC3641B2ABB945A7B /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206E2E81EAC6B7BFDEF04EBB /* DashboardView.swift */; };
+		5E16D71686EC0C5E3B00CDAE /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226F6695E1720D61C1944AB6 /* SetupView.swift */; };
+		65794ABFBD15E2427293B8A3 /* ShieldManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */; };
+		67BE42DE09AA952783320752 /* KindleLockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BDBDCAC9F676F3DD1D52D6 /* KindleLockApp.swift */; };
+		694D8CE659D81D6908222D67 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB73AC2E1A0F02B6A84D45C /* AppState.swift */; };
+		7920EBA86F230730DF30BD7D /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */; };
+		7F324FD352A0F185678A8D61 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A43F7E3B6EAF8EEF64F89A /* ProgressRingView.swift */; };
+		80B61EC3C60313733E579E61 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */; };
+		9DAC6940A7FF880ADF34475E /* ConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA8CE22C76F9A02F2DD79E1 /* ConfirmationView.swift */; };
+		ACEE4CD6587242DE3DFBCAD0 /* AppSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50415FB86BE25C3E637FAAC /* AppSelectionView.swift */; };
+		B0C5933A4226EEAF7D99CD74 /* KindleAPITesterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373D3AB3E953B899E4764084 /* KindleAPITesterApp.swift */; };
+		B3087C6BCC4F29D697EE7CFB /* ShieldConfiguration.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BD96974D6ED6290F5265AD18 /* StatusCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CB2A89827F9662D15B690B /* StatusCardView.swift */; };
+		C1C50113B52B80D7EC4A9A03 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5AB0E3E096A4862ADE0DC3 /* ContentView.swift */; };
+		D5D4CBA23DFF4366A09CCB47 /* ShieldAction.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E3DB9C4216B7B77E67027DC5 /* ReadingProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F54693F717EADF586E47463 /* ReadingProgress.swift */; };
+		E4A53434111FB52F6A66C996 /* ShieldActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2847375844AE8327491B4342 /* ShieldActionExtension.swift */; };
+		F5237B9CF9AD4CD6B0C985CD /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E71C5D6395EFACEFB27B7F /* KeychainService.swift */; };
+		DBGLOG001A1B2C3D4E5F6A7B /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */; };
+		DBGVIEW01A1B2C3D4E5F6A7B /* DebugLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9B7B43CFD298EE397F439856 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C36FB141D7B170AE705EF484 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B5132CAFC8BEBE5D962DD51;
+			remoteInfo = ShieldAction;
+		};
+		C6FB63E7C08FE28BD2FA1DE6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C36FB141D7B170AE705EF484 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A96A071CF47E75438F397A65;
+			remoteInfo = ShieldConfiguration;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BDC571557D10A732AD38ACDF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B3087C6BCC4F29D697EE7CFB /* ShieldConfiguration.appex in Embed Foundation Extensions */,
+				D5D4CBA23DFF4366A09CCB47 /* ShieldAction.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
+		14E71C5D6395EFACEFB27B7F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		1645B3214F001E812145D6A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1CE75FA122BE3E792BBDFD4D /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		1FEB0C94A7812CB885D2D61D /* AmazonLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonLoginView.swift; sourceTree = "<group>"; };
+		206E2E81EAC6B7BFDEF04EBB /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		226F6695E1720D61C1944AB6 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A43F7E3B6EAF8EEF64F89A /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
+		26BDBDCAC9F676F3DD1D52D6 /* KindleLockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleLockApp.swift; sourceTree = "<group>"; };
+		2847375844AE8327491B4342 /* ShieldActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldActionExtension.swift; sourceTree = "<group>"; };
+		34219F641D7640C4D8A8E9B0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		373D3AB3E953B899E4764084 /* KindleAPITesterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAPITesterApp.swift; sourceTree = "<group>"; };
+		3C026A404C5ED6FB05AD3DA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3D4EA0CF8CE599E5C11286E9 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		4CE024D64E50A613FFA0E109 /* KindleLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KindleLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		51CB2A89827F9662D15B690B /* StatusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCardView.swift; sourceTree = "<group>"; };
+		5F54693F717EADF586E47463 /* ReadingProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingProgress.swift; sourceTree = "<group>"; };
+		76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldConfiguration.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		98876D9DEFD408E98DD30CD0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9B5AB0E3E096A4862ADE0DC3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldManager.swift; sourceTree = "<group>"; };
+		AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAPIService.swift; sourceTree = "<group>"; };
+		BB21E0DB006D889E7311BD8C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		CDA8CE22C76F9A02F2DD79E1 /* ConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationView.swift; sourceTree = "<group>"; };
+		DF068F9EF8A288829CF30628 /* KindleAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAuthService.swift; sourceTree = "<group>"; };
+		E50415FB86BE25C3E637FAAC /* AppSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSelectionView.swift; sourceTree = "<group>"; };
+		EDB73AC2E1A0F02B6A84D45C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		F355D33B7D1556057915F8DD /* KindleAPITester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KindleAPITester.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
+		DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		62409816F94438BC7D3E13D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B234F66111C122402C84F3E /* KindleAPI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0EE5793765B085BFCF50FB06 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */,
+				34219F641D7640C4D8A8E9B0 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		229D496C4451C7FCDB5B7E12 /* ShieldAction */ = {
+			isa = PBXGroup;
+			children = (
+				BB21E0DB006D889E7311BD8C /* Info.plist */,
+				2847375844AE8327491B4342 /* ShieldActionExtension.swift */,
+			);
+			path = ShieldAction;
+			sourceTree = "<group>";
+		};
+		2B61F58506C157E3C34FC1CB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9B5AB0E3E096A4862ADE0DC3 /* ContentView.swift */,
+				78E7F48A04BF6360BFF7883B /* Components */,
+				82E3E5029261DAF52A1BBC0E /* Dashboard */,
+				0EE5793765B085BFCF50FB06 /* Settings */,
+				4EF282BC81405F890D3B6AF5 /* SetupFlow */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4EF282BC81405F890D3B6AF5 /* SetupFlow */ = {
+			isa = PBXGroup;
+			children = (
+				1FEB0C94A7812CB885D2D61D /* AmazonLoginView.swift */,
+				E50415FB86BE25C3E637FAAC /* AppSelectionView.swift */,
+				CDA8CE22C76F9A02F2DD79E1 /* ConfirmationView.swift */,
+				226F6695E1720D61C1944AB6 /* SetupView.swift */,
+			);
+			path = SetupFlow;
+			sourceTree = "<group>";
+		};
+		78E7F48A04BF6360BFF7883B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1CE75FA122BE3E792BBDFD4D /* GlassCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		7F07AA75A09EDB93D22B7C68 /* ShieldConfiguration */ = {
+			isa = PBXGroup;
+			children = (
+				3C026A404C5ED6FB05AD3DA0 /* Info.plist */,
+				01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */,
+			);
+			path = ShieldConfiguration;
+			sourceTree = "<group>";
+		};
+		82E3E5029261DAF52A1BBC0E /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				206E2E81EAC6B7BFDEF04EBB /* DashboardView.swift */,
+				26A43F7E3B6EAF8EEF64F89A /* ProgressRingView.swift */,
+				51CB2A89827F9662D15B690B /* StatusCardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		8EC2B907F30C8BB140104D34 /* KindleLock */ = {
+			isa = PBXGroup;
+			children = (
+				1645B3214F001E812145D6A8 /* Assets.xcassets */,
+				26BDBDCAC9F676F3DD1D52D6 /* KindleLockApp.swift */,
+				ADE652B564DF874A03199D48 /* Models */,
+				B78E1DCDFADA3A0F41C11E7D /* Services */,
+				C8747D3DA54D5341B289DBD8 /* Shared */,
+				2B61F58506C157E3C34FC1CB /* Views */,
+			);
+			path = KindleLock;
+			sourceTree = "<group>";
+		};
+		ADE652B564DF874A03199D48 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				EDB73AC2E1A0F02B6A84D45C /* AppState.swift */,
+				5F54693F717EADF586E47463 /* ReadingProgress.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B78E1DCDFADA3A0F41C11E7D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */,
+				14E71C5D6395EFACEFB27B7F /* KeychainService.swift */,
+				AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */,
+				DF068F9EF8A288829CF30628 /* KindleAuthService.swift */,
+				BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */,
+				9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		BB43C60DCFB795F76EFC5E8F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F355D33B7D1556057915F8DD /* KindleAPITester.app */,
+				4CE024D64E50A613FFA0E109 /* KindleLock.app */,
+				22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */,
+				76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C34F7ADFE1F2D32AC3976856 /* KindleAPITester */ = {
+			isa = PBXGroup;
+			children = (
+				98876D9DEFD408E98DD30CD0 /* ContentView.swift */,
+				373D3AB3E953B899E4764084 /* KindleAPITesterApp.swift */,
+			);
+			path = KindleAPITester;
+			sourceTree = "<group>";
+		};
+		C8747D3DA54D5341B289DBD8 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				3D4EA0CF8CE599E5C11286E9 /* Constants.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		EF96AB7C50DB6F04FF85282D = {
+			isa = PBXGroup;
+			children = (
+				C34F7ADFE1F2D32AC3976856 /* KindleAPITester */,
+				8EC2B907F30C8BB140104D34 /* KindleLock */,
+				229D496C4451C7FCDB5B7E12 /* ShieldAction */,
+				7F07AA75A09EDB93D22B7C68 /* ShieldConfiguration */,
+				BB43C60DCFB795F76EFC5E8F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2B5132CAFC8BEBE5D962DD51 /* ShieldAction */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B12FE52C50C8DA57E1CCB358 /* Build configuration list for PBXNativeTarget "ShieldAction" */;
+			buildPhases = (
+				BC9BA0A5526FB396AC175949 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShieldAction;
+			packageProductDependencies = (
+			);
+			productName = ShieldAction;
+			productReference = 22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		6DF467DDE9E343718AE185C7 /* KindleAPITester */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 370DAEC60FC07280C4EEE4D3 /* Build configuration list for PBXNativeTarget "KindleAPITester" */;
+			buildPhases = (
+				F0C372691270D6B18149776C /* Sources */,
+				62409816F94438BC7D3E13D2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KindleAPITester;
+			packageProductDependencies = (
+				9D2F3CED522753897FD45F50 /* KindleAPI */,
+			);
+			productName = KindleAPITester;
+			productReference = F355D33B7D1556057915F8DD /* KindleAPITester.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8EEE447E4235953155906329 /* KindleLock */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D1E19834323F275955485AE /* Build configuration list for PBXNativeTarget "KindleLock" */;
+			buildPhases = (
+				09787B32C5BAC0E5EC87FACA /* Sources */,
+				6FCE01D008C8FCA8C4FCC2E3 /* Resources */,
+				BDC571557D10A732AD38ACDF /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2F2C3B25D985D82FCD9465A /* PBXTargetDependency */,
+				EA73615587BE1BA34F064AFF /* PBXTargetDependency */,
+			);
+			name = KindleLock;
+			packageProductDependencies = (
+			);
+			productName = KindleLock;
+			productReference = 4CE024D64E50A613FFA0E109 /* KindleLock.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A96A071CF47E75438F397A65 /* ShieldConfiguration */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 10D95E18A525FF5F86F24611 /* Build configuration list for PBXNativeTarget "ShieldConfiguration" */;
+			buildPhases = (
+				BE6B8F025BD7D20427F227AA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShieldConfiguration;
+			packageProductDependencies = (
+			);
+			productName = ShieldConfiguration;
+			productReference = 76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C36FB141D7B170AE705EF484 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 6364A8A82BEAF1487B098A2D /* Build configuration list for PBXProject "KindleLock" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = EF96AB7C50DB6F04FF85282D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1828871E19C3A6E1D740E34F /* XCRemoteSwiftPackageReference "swift-kindle" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6DF467DDE9E343718AE185C7 /* KindleAPITester */,
+				8EEE447E4235953155906329 /* KindleLock */,
+				2B5132CAFC8BEBE5D962DD51 /* ShieldAction */,
+				A96A071CF47E75438F397A65 /* ShieldConfiguration */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6FCE01D008C8FCA8C4FCC2E3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17B7F4FC1ACCF9768D41F03D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		09787B32C5BAC0E5EC87FACA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24EFBE58CB8E0A436C08F66F /* AmazonLoginView.swift in Sources */,
+				ACEE4CD6587242DE3DFBCAD0 /* AppSelectionView.swift in Sources */,
+				694D8CE659D81D6908222D67 /* AppState.swift in Sources */,
+				9DAC6940A7FF880ADF34475E /* ConfirmationView.swift in Sources */,
+				570605949694D08A88D5A617 /* Constants.swift in Sources */,
+				C1C50113B52B80D7EC4A9A03 /* ContentView.swift in Sources */,
+				5D7C8ACFC3641B2ABB945A7B /* DashboardView.swift in Sources */,
+				DBGLOG001A1B2C3D4E5F6A7B /* DebugLogger.swift in Sources */,
+				DBGVIEW01A1B2C3D4E5F6A7B /* DebugLogView.swift in Sources */,
+				4DF64EEEE57F139158BAA7FC /* GlassCard.swift in Sources */,
+				F5237B9CF9AD4CD6B0C985CD /* KeychainService.swift in Sources */,
+				23F8CC8B65E0C2BDC0CE16DE /* KindleAPIService.swift in Sources */,
+				546B8D59AF78971E463367E5 /* KindleAuthService.swift in Sources */,
+				67BE42DE09AA952783320752 /* KindleLockApp.swift in Sources */,
+				7F324FD352A0F185678A8D61 /* ProgressRingView.swift in Sources */,
+				E3DB9C4216B7B77E67027DC5 /* ReadingProgress.swift in Sources */,
+				7920EBA86F230730DF30BD7D /* SettingsStore.swift in Sources */,
+				599E4556083ECBD6A229BF50 /* SettingsView.swift in Sources */,
+				5E16D71686EC0C5E3B00CDAE /* SetupView.swift in Sources */,
+				65794ABFBD15E2427293B8A3 /* ShieldManager.swift in Sources */,
+				BD96974D6ED6290F5265AD18 /* StatusCardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC9BA0A5526FB396AC175949 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4A53434111FB52F6A66C996 /* ShieldActionExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE6B8F025BD7D20427F227AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				80B61EC3C60313733E579E61 /* ShieldConfigurationExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F0C372691270D6B18149776C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				554374D58A22FA88970B5DEE /* ContentView.swift in Sources */,
+				B0C5933A4226EEAF7D99CD74 /* KindleAPITesterApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E2F2C3B25D985D82FCD9465A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A96A071CF47E75438F397A65 /* ShieldConfiguration */;
+			targetProxy = C6FB63E7C08FE28BD2FA1DE6 /* PBXContainerItemProxy */;
+		};
+		EA73615587BE1BA34F064AFF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B5132CAFC8BEBE5D962DD51 /* ShieldAction */;
+			targetProxy = 9B7B43CFD298EE397F439856 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0306B20AA94D0A27164A7C79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.apitester;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4E99EFF1D205429F22997BDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		5D6835673A04D3DA68D049ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6758C72E753C93342A19B812 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldConfiguration/ShieldConfiguration.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShieldConfiguration/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app.ShieldConfiguration;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6B237BC23FD4EEA2066B94E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CED10B6510CA65F6BAC70D74 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldAction/ShieldAction.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShieldAction/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app.ShieldAction;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D84BF15A18F3D092E1BB8FE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.apitester;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E8866DDEEDCCD4B588219EA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		EFB1F6EEF6DF8CFDD606442B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldAction/ShieldAction.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShieldAction/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app.ShieldAction;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FED0C39CD373D925FE53FC9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldConfiguration/ShieldConfiguration.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A74G8926JQ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShieldConfiguration/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kindlelock.app.ShieldConfiguration;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		10D95E18A525FF5F86F24611 /* Build configuration list for PBXNativeTarget "ShieldConfiguration" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FED0C39CD373D925FE53FC9D /* Debug */,
+				6758C72E753C93342A19B812 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		370DAEC60FC07280C4EEE4D3 /* Build configuration list for PBXNativeTarget "KindleAPITester" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0306B20AA94D0A27164A7C79 /* Debug */,
+				D84BF15A18F3D092E1BB8FE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3D1E19834323F275955485AE /* Build configuration list for PBXNativeTarget "KindleLock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D6835673A04D3DA68D049ED /* Debug */,
+				6B237BC23FD4EEA2066B94E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6364A8A82BEAF1487B098A2D /* Build configuration list for PBXProject "KindleLock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8866DDEEDCCD4B588219EA7 /* Debug */,
+				4E99EFF1D205429F22997BDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B12FE52C50C8DA57E1CCB358 /* Build configuration list for PBXNativeTarget "ShieldAction" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EFB1F6EEF6DF8CFDD606442B /* Debug */,
+				CED10B6510CA65F6BAC70D74 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1828871E19C3A6E1D740E34F /* XCRemoteSwiftPackageReference "swift-kindle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/natikgadzhi/swift-kindle";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D2F3CED522753897FD45F50 /* KindleAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1828871E19C3A6E1D740E34F /* XCRemoteSwiftPackageReference "swift-kindle" */;
+			productName = KindleAPI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C36FB141D7B170AE705EF484 /* Project object */;
+}

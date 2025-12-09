@@ -127,11 +127,26 @@ struct ContentView: View {
             output += "Note: Try 'Clear & Re-login' to capture the device token\n"
         }
 
-        // Method 3: startReading API (try first 3 books)
+        // Method 3: startReading API (try first 3 books, dump full response for first one)
         output += "\n--- Method 3: startReading API ---\n"
-        for book in books.prefix(3) {
-            let result = await fetchStartReading(asin: book.asin, cookieHeader: cookieHeader, sessionId: sessionId, adpToken: adpToken)
-            output += "\(book.title.prefix(25))...: \(result)\n"
+        var firstBookMetadataUrl: String? = nil
+        for (index, book) in books.prefix(3).enumerated() {
+            let dumpFull = (index == 0) // Only dump full response for first book
+            let result = await fetchStartReading(asin: book.asin, cookieHeader: cookieHeader, sessionId: sessionId, adpToken: adpToken, dumpFullResponse: dumpFull)
+            output += "\(book.title.prefix(25))...: \(result.summary)\n"
+
+            // Capture first book's metadataUrl
+            if index == 0 && firstBookMetadataUrl == nil {
+                firstBookMetadataUrl = result.metadataUrl
+            }
+        }
+
+        // Method 5: Fetch Book Metadata from S3 (only for first book)
+        if let metadataUrl = firstBookMetadataUrl {
+            await fetchBookMetadata(metadataUrl: metadataUrl)
+        } else {
+            output += "\n--- Method 5: Book Metadata ---\n"
+            output += "⚠️ No metadataUrl available from startReading response\n"
         }
 
         // Method 4: HTML DOM Scrape
@@ -175,6 +190,30 @@ struct ContentView: View {
                 return []
             }
 
+            // Dump full JSON response for analysis
+            output += "\n=== FULL LIBRARY API RESPONSE ===\n"
+            if let jsonObj = try? JSONSerialization.jsonObject(with: data),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObj, options: [.prettyPrinted, .sortedKeys]),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                // Show top-level keys first
+                if let dict = jsonObj as? [String: Any] {
+                    output += "Top-level keys: \(dict.keys.sorted().joined(separator: ", "))\n\n"
+                }
+                // Show first book's full structure
+                if let dict = jsonObj as? [String: Any],
+                   let items = dict["itemsList"] as? [[String: Any]],
+                   let firstItem = items.first,
+                   let firstItemData = try? JSONSerialization.data(withJSONObject: firstItem, options: [.prettyPrinted, .sortedKeys]),
+                   let firstItemString = String(data: firstItemData, encoding: .utf8) {
+                    output += "=== FIRST BOOK FULL STRUCTURE ===\n"
+                    output += firstItemString
+                    output += "\n=== END FIRST BOOK ===\n\n"
+                }
+            } else if let rawString = String(data: data, encoding: .utf8) {
+                output += "Raw response (first 2000 chars):\n\(rawString.prefix(2000))\n"
+            }
+            output += "=== END LIBRARY RESPONSE ===\n\n"
+
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let itemsList = json["itemsList"] as? [[String: Any]] else {
                 output += "Failed to parse JSON response\n"
@@ -214,19 +253,27 @@ struct ContentView: View {
             output += "Device token HTTP: \(httpResponse.statusCode)\n"
 
             if httpResponse.statusCode == 200 {
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    output += "Response keys: \(json.keys.joined(separator: ", "))\n"
+                // Dump full response
+                output += "\n=== FULL getDeviceToken API RESPONSE ===\n"
+                if let jsonObj = try? JSONSerialization.jsonObject(with: data),
+                   let prettyData = try? JSONSerialization.data(withJSONObject: jsonObj, options: [.prettyPrinted, .sortedKeys]),
+                   let prettyString = String(data: prettyData, encoding: .utf8) {
+                    if let dict = jsonObj as? [String: Any] {
+                        output += "Top-level keys: \(dict.keys.sorted().joined(separator: ", "))\n\n"
+                    }
+                    output += prettyString
+                } else if let rawString = String(data: data, encoding: .utf8) {
+                    output += "Raw response:\n\(rawString.prefix(2000))\n"
+                }
+                output += "\n=== END getDeviceToken RESPONSE ===\n\n"
 
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     if let deviceSessionToken = json["deviceSessionToken"] as? String {
                         output += "✅ Got ADP session token!\n"
                         return deviceSessionToken
                     } else {
-                        let preview = String(data: data, encoding: .utf8)?.prefix(300) ?? "?"
-                        output += "Response: \(preview)\n"
+                        output += "⚠️ No deviceSessionToken in response\n"
                     }
-                } else {
-                    let preview = String(data: data, encoding: .utf8)?.prefix(300) ?? "?"
-                    output += "Raw: \(preview)\n"
                 }
             } else {
                 let preview = String(data: data, encoding: .utf8)?.prefix(300) ?? "?"
@@ -240,7 +287,12 @@ struct ContentView: View {
 
     // MARK: - Method 3: startReading API
 
-    private func fetchStartReading(asin: String, cookieHeader: String, sessionId: String, adpToken: String?) async -> String {
+    struct StartReadingResult {
+        let summary: String
+        let metadataUrl: String?
+    }
+
+    private func fetchStartReading(asin: String, cookieHeader: String, sessionId: String, adpToken: String?, dumpFullResponse: Bool = false) async -> StartReadingResult {
         do {
             let url = URL(string: "https://read.amazon.com/service/mobile/reader/startReading?asin=\(asin)&clientVersion=20000100")!
             var request = URLRequest(url: url)
@@ -254,24 +306,129 @@ struct ContentView: View {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                return "No response"
+                return StartReadingResult(summary: "No response", metadataUrl: nil)
             }
 
             if httpResponse.statusCode == 200 {
+                var metadataUrl: String? = nil
+
+                // Dump full response if requested (for first book only)
+                if dumpFullResponse {
+                    output += "\n=== FULL startReading API RESPONSE (ASIN: \(asin)) ===\n"
+                    if let jsonObj = try? JSONSerialization.jsonObject(with: data),
+                       let prettyData = try? JSONSerialization.data(withJSONObject: jsonObj, options: [.prettyPrinted, .sortedKeys]),
+                       let prettyString = String(data: prettyData, encoding: .utf8) {
+                        // Show top-level keys
+                        if let dict = jsonObj as? [String: Any] {
+                            output += "Top-level keys: \(dict.keys.sorted().joined(separator: ", "))\n\n"
+                        }
+                        output += prettyString
+                    } else if let rawString = String(data: data, encoding: .utf8) {
+                        output += "Raw response:\n\(rawString.prefix(5000))\n"
+                    }
+                    output += "\n=== END startReading RESPONSE ===\n\n"
+                }
+
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    // Extract metadataUrl
+                    metadataUrl = json["metadataUrl"] as? String
+
                     if let lastPageRead = json["lastPageReadData"] as? [String: Any],
                        let position = lastPageRead["position"] as? Int {
-                        return "✅ Position: \(position)"
+                        return StartReadingResult(summary: "✅ Position: \(position)", metadataUrl: metadataUrl)
                     } else {
-                        return "✅ OK but no position data"
+                        return StartReadingResult(summary: "✅ OK but no position data", metadataUrl: metadataUrl)
                     }
                 }
-                return "✅ OK but couldn't parse"
+                return StartReadingResult(summary: "✅ OK but couldn't parse", metadataUrl: metadataUrl)
             } else {
-                return "❌ HTTP \(httpResponse.statusCode)"
+                return StartReadingResult(summary: "❌ HTTP \(httpResponse.statusCode)", metadataUrl: nil)
             }
         } catch {
-            return "❌ \(error.localizedDescription)"
+            return StartReadingResult(summary: "❌ \(error.localizedDescription)", metadataUrl: nil)
+        }
+    }
+
+    // MARK: - Method 5: Book Metadata from S3
+
+    private func fetchBookMetadata(metadataUrl: String) async {
+        output += "\n--- Method 5: Book Metadata (from metadataUrl) ---\n"
+
+        guard let url = URL(string: metadataUrl) else {
+            output += "❌ Invalid metadata URL\n"
+            return
+        }
+
+        output += "Fetching: \(metadataUrl.prefix(80))...\n"
+
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                output += "❌ No HTTP response\n"
+                return
+            }
+
+            output += "HTTP Status: \(httpResponse.statusCode)\n"
+
+            if httpResponse.statusCode != 200 {
+                let preview = String(data: data, encoding: .utf8)?.prefix(500) ?? "?"
+                output += "Error response: \(preview)\n"
+                return
+            }
+
+            // Response is JSONP format: callback_name({...})
+            // Need to strip the callback wrapper
+            var responseString = String(data: data, encoding: .utf8) ?? ""
+
+            // Try to extract JSON from JSONP
+            if let jsonStart = responseString.firstIndex(of: "("),
+               let jsonEnd = responseString.lastIndex(of: ")") {
+                let jsonSubstring = responseString[responseString.index(after: jsonStart)..<jsonEnd]
+                responseString = String(jsonSubstring)
+                output += "Note: Stripped JSONP wrapper\n"
+            }
+
+            output += "\n=== FULL BOOK METADATA ===\n"
+
+            // Pretty print if it's valid JSON
+            if let jsonData = responseString.data(using: .utf8),
+               let jsonObj = try? JSONSerialization.jsonObject(with: jsonData),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObj, options: [.prettyPrinted, .sortedKeys]),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+
+                // Show top-level keys
+                if let dict = jsonObj as? [String: Any] {
+                    output += "Top-level keys: \(dict.keys.sorted().joined(separator: ", "))\n\n"
+
+                    // Highlight potentially useful fields for page calculation
+                    let interestingKeys = ["pageCount", "totalPages", "pages", "pageNumbers", "locations", "totalLocations", "contentLength", "size", "length", "srl", "startReadingLocation", "endReadingLocation"]
+                    var foundInteresting: [String] = []
+                    for key in interestingKeys {
+                        if let value = dict[key] {
+                            foundInteresting.append("\(key): \(value)")
+                        }
+                    }
+                    if !foundInteresting.isEmpty {
+                        output += "🎯 Potentially useful for page calculation:\n"
+                        for field in foundInteresting {
+                            output += "  \(field)\n"
+                        }
+                        output += "\n"
+                    }
+                }
+
+                output += prettyString
+            } else {
+                // Not JSON, show raw
+                output += "Raw response (not valid JSON):\n"
+                output += responseString.prefix(5000).description
+            }
+
+            output += "\n=== END BOOK METADATA ===\n"
+
+        } catch {
+            output += "❌ Error: \(error.localizedDescription)\n"
         }
     }
 

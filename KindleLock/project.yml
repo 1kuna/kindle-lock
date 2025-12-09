@@ -31,12 +31,11 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.app
+        GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
-        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "KindleLock connects to your reading tracker on the local network."
-        INFOPLIST_KEY_NSBonjourServices: "_http._tcp"
         INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers: "com.kindlelock.app.refresh"
         CODE_SIGN_ENTITLEMENTS: KindleLock/KindleLock.entitlements
     dependencies:
