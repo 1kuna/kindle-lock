@@ -10,6 +10,7 @@ struct ContentView: View {
     @State private var isLoading = false
     @State private var webView: WKWebView?
     @State private var deviceToken: String?
+    @State private var loginDebugLogs: [String] = []
 
     var body: some View {
         NavigationStack {
@@ -88,7 +89,8 @@ struct ContentView: View {
                     isLoggedIn: $isLoggedIn,
                     isPresented: $showLogin,
                     clearCookiesFirst: clearCookiesFirst,
-                    deviceToken: $deviceToken
+                    deviceToken: $deviceToken,
+                    debugLogs: $loginDebugLogs
                 )
             }
         }
@@ -137,6 +139,14 @@ struct ContentView: View {
         output += "Loading library page in WebView...\n"
 
         await scrapeLibraryHTML()
+
+        // Add login debug logs to output
+        if !loginDebugLogs.isEmpty {
+            output += "\n--- Login Debug Logs (\(loginDebugLogs.count) entries) ---\n"
+            for log in loginDebugLogs {
+                output += "\(log)\n"
+            }
+        }
 
         isLoading = false
     }
@@ -550,20 +560,50 @@ struct AmazonLoginView: View {
     @Binding var isPresented: Bool
     var clearCookiesFirst: Bool = false
     @Binding var deviceToken: String?
+    @Binding var debugLogs: [String]
 
     @State private var webViewRef: WKWebView?
     @State private var statusMessage = "Loading..."
+    @State private var showDebugLogs = false
 
     var body: some View {
         NavigationStack {
-            AmazonWebView(
-                cookies: $cookies,
-                isLoggedIn: $isLoggedIn,
-                deviceToken: $deviceToken,
-                clearCookiesFirst: clearCookiesFirst,
-                webViewRef: $webViewRef,
-                statusMessage: $statusMessage
-            )
+            VStack(spacing: 0) {
+                AmazonWebView(
+                    cookies: $cookies,
+                    isLoggedIn: $isLoggedIn,
+                    deviceToken: $deviceToken,
+                    clearCookiesFirst: clearCookiesFirst,
+                    webViewRef: $webViewRef,
+                    statusMessage: $statusMessage,
+                    debugLogs: $debugLogs
+                )
+
+                // Debug log panel (collapsible)
+                if showDebugLogs {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 2) {
+                                ForEach(Array(debugLogs.enumerated()), id: \.offset) { idx, log in
+                                    Text(log)
+                                        .font(.system(size: 9, design: .monospaced))
+                                        .foregroundStyle(.secondary)
+                                        .id(idx)
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                        }
+                        .frame(height: 150)
+                        .background(Color(.secondarySystemBackground))
+                        .onChange(of: debugLogs.count) {
+                            if let last = debugLogs.indices.last {
+                                proxy.scrollTo(last, anchor: .bottom)
+                            }
+                        }
+                    }
+                }
+            }
             .navigationTitle("Amazon Login")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -581,13 +621,20 @@ struct AmazonLoginView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                Text(statusMessage)
+                HStack {
+                    Text(statusMessage)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button(showDebugLogs ? "Hide Logs" : "Show Logs (\(debugLogs.count))") {
+                        showDebugLogs.toggle()
+                    }
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
-                    .background(.bar)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
             }
         }
     }
@@ -631,6 +678,7 @@ struct AmazonWebView: UIViewRepresentable {
     var clearCookiesFirst: Bool
     @Binding var webViewRef: WKWebView?
     @Binding var statusMessage: String
+    @Binding var debugLogs: [String]
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -646,38 +694,133 @@ struct AmazonWebView: UIViewRepresentable {
             config.websiteDataStore = .default()
         }
 
-        // Inject script to capture device token from network requests
+        // Inject comprehensive script to capture device token
         let script = WKUserScript(source: """
             (function() {
+                const log = (msg) => window.webkit.messageHandlers.debugLog.postMessage(msg);
+                const foundToken = (source, token) => {
+                    window.webkit.messageHandlers.deviceToken.postMessage(JSON.stringify({source, token}));
+                };
+
+                // Helper to extract serialNumber from URL (works with relative URLs)
+                const extractSerialNumber = (url) => {
+                    if (!url || !url.includes('getDeviceToken')) return null;
+                    const match = url.match(/serialNumber=([^&]+)/);
+                    return match ? match[1] : null;
+                };
+
+                // 1. Intercept fetch
                 const originalFetch = window.fetch;
                 window.fetch = function(...args) {
                     const url = args[0]?.url || args[0];
-                    if (url && url.includes('getDeviceToken')) {
-                        const urlParams = new URLSearchParams(new URL(url).search);
-                        const serialNumber = urlParams.get('serialNumber');
-                        if (serialNumber) {
-                            window.webkit.messageHandlers.deviceToken.postMessage(serialNumber);
+                    if (typeof url === 'string') {
+                        log('fetch: ' + url.substring(0, 100));
+                        const serial = extractSerialNumber(url);
+                        if (serial) {
+                            log('🎯 Found device token in fetch!');
+                            foundToken('fetch', serial);
                         }
                     }
                     return originalFetch.apply(this, args);
                 };
 
+                // 2. Intercept XHR
                 const originalXHR = XMLHttpRequest.prototype.open;
                 XMLHttpRequest.prototype.open = function(method, url, ...args) {
-                    if (url && url.includes('getDeviceToken')) {
-                        const urlParams = new URLSearchParams(new URL(url, window.location.origin).search);
-                        const serialNumber = urlParams.get('serialNumber');
-                        if (serialNumber) {
-                            window.webkit.messageHandlers.deviceToken.postMessage(serialNumber);
+                    if (typeof url === 'string') {
+                        log('xhr: ' + url.substring(0, 100));
+                        const serial = extractSerialNumber(url);
+                        if (serial) {
+                            log('🎯 Found device token in XHR!');
+                            foundToken('xhr', serial);
                         }
                     }
                     return originalXHR.apply(this, [method, url, ...args]);
                 };
+
+                // 3. Intercept sendBeacon
+                if (navigator.sendBeacon) {
+                    const originalBeacon = navigator.sendBeacon.bind(navigator);
+                    navigator.sendBeacon = function(url, data) {
+                        log('beacon: ' + url.substring(0, 100));
+                        const serial = extractSerialNumber(url);
+                        if (serial) {
+                            log('🎯 Found device token in beacon!');
+                            foundToken('beacon', serial);
+                        }
+                        return originalBeacon(url, data);
+                    };
+                }
+
+                // 4. Check localStorage/sessionStorage after page loads
+                const checkStorage = () => {
+                    log('Checking storage...');
+                    const found = [];
+
+                    // Check localStorage
+                    try {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            const val = localStorage.getItem(key);
+                            if (key && (key.toLowerCase().includes('device') || key.toLowerCase().includes('token') || key.toLowerCase().includes('serial'))) {
+                                found.push('localStorage.' + key + '=' + (val || '').substring(0, 50));
+                                if (val && val.length > 20 && val.length < 100) {
+                                    foundToken('localStorage:' + key, val);
+                                }
+                            }
+                        }
+                    } catch(e) { log('localStorage error: ' + e); }
+
+                    // Check sessionStorage
+                    try {
+                        for (let i = 0; i < sessionStorage.length; i++) {
+                            const key = sessionStorage.key(i);
+                            const val = sessionStorage.getItem(key);
+                            if (key && (key.toLowerCase().includes('device') || key.toLowerCase().includes('token') || key.toLowerCase().includes('serial'))) {
+                                found.push('sessionStorage.' + key + '=' + (val || '').substring(0, 50));
+                                if (val && val.length > 20 && val.length < 100) {
+                                    foundToken('sessionStorage:' + key, val);
+                                }
+                            }
+                        }
+                    } catch(e) { log('sessionStorage error: ' + e); }
+
+                    // Check for KindleReaderSession in window
+                    if (window.KindleReaderSession) {
+                        log('Found KindleReaderSession');
+                        foundToken('KindleReaderSession', JSON.stringify(window.KindleReaderSession).substring(0, 200));
+                    }
+
+                    // Look for device token in any global variable
+                    ['deviceToken', 'deviceSerial', 'serialNumber', 'KRSConfig'].forEach(name => {
+                        if (window[name]) {
+                            log('Found window.' + name);
+                            foundToken('window.' + name, JSON.stringify(window[name]).substring(0, 200));
+                        }
+                    });
+
+                    log('Storage check done. Found: ' + found.length + ' potential items');
+                    if (found.length > 0) log('Items: ' + found.join(', '));
+                };
+
+                // Run storage check after DOM is ready and after a delay
+                if (document.readyState === 'complete') {
+                    setTimeout(checkStorage, 1000);
+                } else {
+                    window.addEventListener('load', () => setTimeout(checkStorage, 1000));
+                }
+
+                // Also check periodically for a few seconds
+                setTimeout(checkStorage, 3000);
+                setTimeout(checkStorage, 6000);
+
+                log('Device token capture script initialized');
             })();
             """, injectionTime: .atDocumentStart, forMainFrameOnly: false)
 
         config.userContentController.addUserScript(script)
         config.userContentController.add(context.coordinator, name: "deviceToken")
+        config.userContentController.add(context.coordinator, name: "debugLog")
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
@@ -704,19 +847,40 @@ struct AmazonWebView: UIViewRepresentable {
             self.parent = parent
         }
 
+        private func log(_ message: String) {
+            DispatchQueue.main.async {
+                self.parent.debugLogs.append(message)
+            }
+        }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            if message.name == "deviceToken", let token = message.body as? String {
-                print("📱 Captured device token: \(token.prefix(20))...")
-                DispatchQueue.main.async {
-                    self.parent.deviceToken = token
-                    self.parent.statusMessage = "✅ Device token captured"
+            if message.name == "debugLog", let logMsg = message.body as? String {
+                log("JS: \(logMsg)")
+                // Show important network activity in status
+                if logMsg.contains("getDeviceToken") || logMsg.contains("register") {
+                    DispatchQueue.main.async {
+                        self.parent.statusMessage = "🔍 \(logMsg.prefix(40))..."
+                    }
+                }
+            } else if message.name == "deviceToken", let jsonString = message.body as? String {
+                log("📱 Token data: \(jsonString.prefix(100))...")
+                // Parse the JSON to get source and token
+                if let data = jsonString.data(using: .utf8),
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+                   let source = json["source"],
+                   let token = json["token"] {
+                    log("✅ Found token from \(source): \(token.prefix(30))...")
+                    DispatchQueue.main.async {
+                        self.parent.deviceToken = token
+                        self.parent.statusMessage = "✅ Token from \(source)"
+                    }
                 }
             }
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             guard let url = webView.url else { return }
-            print("📄 Page loaded: \(url.absoluteString.prefix(60))...")
+            log("📄 Loaded: \(url.absoluteString.prefix(50))...")
 
             DispatchQueue.main.async {
                 if url.absoluteString.contains("signin") || url.absoluteString.contains("ap/") {
@@ -728,6 +892,7 @@ struct AmazonWebView: UIViewRepresentable {
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            log("⏳ Navigation started...")
             DispatchQueue.main.async {
                 self.parent.statusMessage = "Loading..."
             }
