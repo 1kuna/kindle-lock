@@ -131,7 +131,12 @@ def upsert_book(
 
 
 def record_progress(asin: str, position: int, percent: float) -> None:
-    """Record a reading progress snapshot and update daily stats."""
+    """Record a reading progress snapshot and update daily stats.
+
+    Only counts pages toward daily goal if this is NOT the first time seeing
+    this book. This prevents adding all historical progress as "read today"
+    when a book is first scraped.
+    """
     with get_db() as conn:
         today = get_today_key()
 
@@ -145,9 +150,7 @@ def record_progress(asin: str, position: int, percent: float) -> None:
             (asin,),
         ).fetchone()
 
-        last_position = last_progress["position"] if last_progress else 0
-
-        # Record new progress
+        # Record new progress (always)
         conn.execute(
             """
             INSERT INTO reading_progress (asin, position, percent_complete)
@@ -156,9 +159,19 @@ def record_progress(asin: str, position: int, percent: float) -> None:
             (asin, position, percent),
         )
 
+        # Only count pages toward daily goal if we have a PREVIOUS record
+        # This prevents counting all historical progress as "read today"
+        # when a book is first added to the database
+        if last_progress is None:
+            logger.info(f"First time seeing book {asin} at position {position} - not counting toward daily goal")
+            return
+
+        last_position = last_progress["position"]
+
         # Calculate pages read (only if position increased)
         if position > last_position:
             pages_delta = position - last_position
+            logger.info(f"Book {asin}: read {pages_delta} pages ({last_position} -> {position})")
 
             # Update daily stats
             conn.execute(
@@ -263,3 +276,18 @@ def get_book(asin: str) -> Optional[dict]:
         if book["asin"] == asin:
             return book
     return None
+
+
+def reset_daily_stats() -> None:
+    """Reset all daily stats. Use after fixing the first-time counting bug."""
+    with get_db() as conn:
+        conn.execute("DELETE FROM daily_stats")
+    logger.info("Daily stats reset")
+
+
+def reset_all_progress() -> None:
+    """Reset all reading progress. Use to re-establish baseline."""
+    with get_db() as conn:
+        conn.execute("DELETE FROM reading_progress")
+        conn.execute("DELETE FROM daily_stats")
+    logger.info("All reading progress and daily stats reset")
