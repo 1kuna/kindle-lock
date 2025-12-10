@@ -212,11 +212,28 @@ final class AppState {
         isLoading = false
     }
 
-    /// Calculate today's progress from book positions using percentage-based tracking
-    private func calculateTodayProgress(from books: [KindleBook]) -> TodayProgress {
+    /// Calculate the effective day accounting for the reset hour (default 4am)
+    /// If current time is before reset hour, we're still on "yesterday"
+    private func effectiveDay(from date: Date = Date()) -> String {
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+
+        // If before reset hour, use previous day
+        let effectiveDate: Date
+        if hour < settings.dayResetHour {
+            effectiveDate = calendar.date(byAdding: .day, value: -1, to: date) ?? date
+        } else {
+            effectiveDate = date
+        }
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let today = dateFormatter.string(from: Date())
+        return dateFormatter.string(from: effectiveDate)
+    }
+
+    /// Calculate today's progress from book positions using percentage-based tracking
+    private func calculateTodayProgress(from books: [KindleBook]) -> TodayProgress {
+        let today = effectiveDay()
 
         // Get or create daily stats
         var stats = settings.dailyStats
@@ -279,8 +296,12 @@ final class AppState {
             }
         }
 
-        // Always update last known percentages for next day's baseline
-        stats?.lastKnownPercentages = currentPercentages
+        // Update last known percentages using high water mark (only increase, never decrease)
+        // This prevents fluctuation from Whispersync position differences between devices
+        for (asin, newPercent) in currentPercentages {
+            let existingPercent = stats?.lastKnownPercentages[asin] ?? 0
+            stats?.lastKnownPercentages[asin] = max(existingPercent, newPercent)
+        }
 
         // Check if goal was just met
         let goal = settings.dailyPercentageGoal
