@@ -545,9 +545,10 @@
 				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "$(inherited) com.kindlelock.app.refresh com.kindlelock.app.deepScan";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -587,9 +588,10 @@
 				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "$(inherited) com.kindlelock.app.refresh com.kindlelock.app.deepScan";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (

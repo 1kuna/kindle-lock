@@ -23,6 +23,7 @@ final class AppState {
     var blockedApps: FamilyActivitySelection
     var authorizationStatus: AuthorizationStatus = .notDetermined
     var refreshProgress: RefreshProgress?
+    var isDeepScanning = false
 
     /// Tracks auth state from KindleAuthService (mirrored for @Observable compatibility)
     private(set) var isAuthenticatedState: Bool = false
@@ -397,5 +398,97 @@ final class AppState {
     /// Force shield update (called after authorization)
     func forceUpdateShields() {
         updateShields()
+    }
+
+    // MARK: - Deep Scan
+
+    /// Last deep scan date (for UI display)
+    var lastDeepScanDate: Date? {
+        settings.lastDeepScanDate
+    }
+
+    /// Perform a full library scan (all books, paginated)
+    /// Used for nightly background scan or manual trigger
+    func performDeepScan() async {
+        guard isAuthenticatedState else {
+            lastError = "Please sign in to Amazon"
+            logger.log(.error, "Deep scan failed: not authenticated")
+            return
+        }
+
+        guard !isDeepScanning else {
+            logger.log(.progress, "Deep scan already in progress, skipping")
+            return
+        }
+
+        logger.log(.progress, "Deep scan started (full library)")
+        isDeepScanning = true
+        lastError = nil
+        refreshProgress = RefreshProgress(isActive: true, statusMessage: "Deep scan: loading library...")
+
+        do {
+            // Fetch entire library with pagination
+            refreshProgress?.statusMessage = "Scanning full library..."
+            let books = try await kindleAPI.fetchEntireLibrary()
+            refreshProgress?.totalBooks = books.count
+            logger.log(.progress, "Deep scan: found \(books.count) total books")
+
+            // Get metadata cache
+            let metadataCache = settings.bookMetadataCache
+
+            // Fetch position and metadata for each book
+            var enrichedBooks: [KindleBook] = []
+            for (index, book) in books.enumerated() {
+                refreshProgress?.currentBook = index + 1
+                refreshProgress?.currentBookTitle = book.title
+                refreshProgress?.statusMessage = "Checking book \(index + 1)/\(books.count)..."
+
+                var enriched = book
+                let cachedMeta = metadataCache[book.asin]
+
+                if let result = try? await kindleAPI.fetchReadingPositionWithMetadata(asin: book.asin, cachedMetadata: cachedMeta) {
+                    enriched.currentPosition = result.position
+                    enriched.startPosition = result.startPosition
+                    enriched.endPosition = result.endPosition
+                }
+                enrichedBooks.append(enriched)
+            }
+
+            // Cache any new metadata
+            updateMetadataCache(from: enrichedBooks)
+
+            // Calculate and save progress
+            let progress = calculateTodayProgress(from: enrichedBooks)
+            todayProgress = progress
+            settings.cachedProgress = progress
+            settings.lastSyncTime = Date()
+            settings.lastDeepScanDate = Date()
+            updateShields()
+
+            refreshProgress?.isComplete = true
+            refreshProgress?.statusMessage = "Deep scan complete!"
+
+            logger.log(.progress, "Deep scan complete: \(books.count) books, \(String(format: "%.2f", progress.percentageRead))% today")
+
+            // Clear progress after a brief delay
+            try? await Task.sleep(for: .seconds(1.5))
+            refreshProgress = nil
+
+        } catch let error as KindleAPIError {
+            if case .unauthorized = error {
+                lastError = "Session expired. Please sign in again."
+            } else {
+                lastError = error.localizedDescription
+            }
+            logger.log(.error, "Deep scan error: \(error.localizedDescription)")
+            refreshProgress?.error = error.localizedDescription
+            refreshProgress = nil
+        } catch {
+            lastError = error.localizedDescription
+            logger.log(.error, "Deep scan error: \(error.localizedDescription)")
+            refreshProgress = nil
+        }
+
+        isDeepScanning = false
     }
 }

@@ -40,7 +40,8 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
-        INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers: "com.kindlelock.app.refresh"
+        INFOPLIST_KEY_UIBackgroundModes: "fetch processing"
+        INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers: "$(inherited) com.kindlelock.app.refresh com.kindlelock.app.deepScan"
         CODE_SIGN_ENTITLEMENTS: KindleLock/KindleLock.entitlements
     dependencies:
       - target: ShieldConfiguration

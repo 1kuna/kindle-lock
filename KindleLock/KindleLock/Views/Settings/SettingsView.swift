@@ -66,6 +66,45 @@ struct SettingsView: View {
                     Label("Info", systemImage: "info.circle")
                 }
 
+                // Library scan section
+                Section {
+                    Button {
+                        Task {
+                            await appState.performDeepScan()
+                        }
+                    } label: {
+                        HStack {
+                            if appState.isDeepScanning {
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .padding(.trailing, 4)
+                                Text("Scanning...")
+                            } else {
+                                Text("Scan Full Library")
+                            }
+                            Spacer()
+                            if !appState.isDeepScanning {
+                                Image(systemName: "arrow.clockwise")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .disabled(appState.isDeepScanning || !authService.isAuthenticated)
+
+                    if let lastScan = appState.lastDeepScanDate {
+                        HStack {
+                            Text("Last Full Scan")
+                            Spacer()
+                            Text(lastScan, style: .relative)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } header: {
+                    Label("Library", systemImage: "books.vertical")
+                } footer: {
+                    Text("Full scan checks all books in your library. This runs automatically overnight while charging, or you can trigger it manually.")
+                }
+
                 // About section
                 Section {
                     HStack {

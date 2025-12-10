@@ -20,6 +20,7 @@ enum Constants {
         static let bookPositions = "bookPositions"
         static let dailyStats = "dailyStats"
         static let bookMetadataCache = "bookMetadataCache"
+        static let lastDeepScanDate = "lastDeepScanDate"
     }
 
     /// URL schemes
@@ -31,5 +32,6 @@ enum Constants {
     /// Background task identifiers
     enum BackgroundTasks {
         static let refresh = "com.kindlelock.app.refresh"
+        static let deepScan = "com.kindlelock.app.deepScan"
     }
 }

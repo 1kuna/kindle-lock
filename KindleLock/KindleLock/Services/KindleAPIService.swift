@@ -22,8 +22,18 @@ final class KindleAPIService {
     private enum Endpoint {
         static let baseURL = "https://read.amazon.com"
 
-        static var library: URL {
-            URL(string: "\(baseURL)/kindle-library/search?query=&libraryType=BOOKS&sortType=recency&querySize=50")!
+        /// Quick refresh - 20 most recent books (for frequent background updates)
+        static var libraryQuick: URL {
+            URL(string: "\(baseURL)/kindle-library/search?query=&libraryType=BOOKS&sortType=recency&querySize=20")!
+        }
+
+        /// Full library fetch - 50 books per page (for deep scan)
+        static func libraryPage(paginationToken: String? = nil) -> URL {
+            var urlString = "\(baseURL)/kindle-library/search?query=&libraryType=BOOKS&sortType=recency&querySize=50"
+            if let token = paginationToken {
+                urlString += "&paginationToken=\(token.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? token)"
+            }
+            return URL(string: urlString)!
         }
 
         static func deviceToken(_ token: String) -> URL {
@@ -63,11 +73,51 @@ final class KindleAPIService {
         return enrichedBooks
     }
 
-    /// Fetch just the library list (without positions)
-    func fetchLibrary() async throws -> [KindleBook] {
-        logger.log(.api, "Fetching library...")
+    /// Fetch 20 most recent books (quick refresh for background updates)
+    func fetchLibraryQuick() async throws -> [KindleBook] {
+        logger.log(.api, "Fetching library (quick - 20 books)...")
+        return try await fetchLibraryPage(url: Endpoint.libraryQuick)
+    }
 
-        let request = makeRequest(url: Endpoint.library)
+    /// Fetch entire library with pagination (for deep scan)
+    func fetchEntireLibrary() async throws -> [KindleBook] {
+        logger.log(.api, "Fetching entire library (paginated)...")
+
+        var allBooks: [KindleBook] = []
+        var paginationToken: String? = nil
+        var pageCount = 0
+        let maxPages = 20 // Safety limit: 20 pages * 50 books = 1000 books max
+
+        repeat {
+            pageCount += 1
+            let url = Endpoint.libraryPage(paginationToken: paginationToken)
+            let request = makeRequest(url: url)
+            let (data, response) = try await session.data(for: request)
+
+            try validateResponse(response)
+
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let itemsList = json["itemsList"] as? [[String: Any]] else {
+                logger.log(.error, "Library decode failed on page \(pageCount)")
+                throw KindleAPIError.decodingError
+            }
+
+            let books = parseBooks(from: itemsList)
+            allBooks.append(contentsOf: books)
+
+            // Get pagination token for next page (nil if no more pages)
+            paginationToken = json["paginationToken"] as? String
+            logger.log(.api, "Page \(pageCount): \(books.count) books, total: \(allBooks.count)")
+
+        } while paginationToken != nil && pageCount < maxPages
+
+        logger.log(.api, "Full library fetched: \(allBooks.count) books across \(pageCount) pages")
+        return allBooks
+    }
+
+    /// Fetch a single page of library results (internal helper)
+    private func fetchLibraryPage(url: URL) async throws -> [KindleBook] {
+        let request = makeRequest(url: url)
         let (data, response) = try await session.data(for: request)
 
         try validateResponse(response)
@@ -78,7 +128,14 @@ final class KindleAPIService {
             throw KindleAPIError.decodingError
         }
 
-        let books = itemsList.compactMap { item -> KindleBook? in
+        let books = parseBooks(from: itemsList)
+        logger.log(.api, "Library page fetched: \(books.count) books")
+        return books
+    }
+
+    /// Parse books from API response items
+    private func parseBooks(from itemsList: [[String: Any]]) -> [KindleBook] {
+        itemsList.compactMap { item -> KindleBook? in
             guard let asin = item["asin"] as? String,
                   let title = item["title"] as? String else {
                 return nil
@@ -93,9 +150,11 @@ final class KindleAPIService {
                 currentPosition: nil
             )
         }
+    }
 
-        logger.log(.api, "Library fetched: \(books.count) books")
-        return books
+    /// Fetch just the library list - 20 most recent (default for backward compatibility)
+    func fetchLibrary() async throws -> [KindleBook] {
+        try await fetchLibraryQuick()
     }
 
     /// Fetch reading position and metadata for a specific book

@@ -81,6 +81,11 @@ final class SettingsStore: Sendable {
         set { defaults.set(newValue, forKey: Constants.Keys.lastSyncTime) }
     }
 
+    var lastDeepScanDate: Date? {
+        get { defaults.object(forKey: Constants.Keys.lastDeepScanDate) as? Date }
+        set { defaults.set(newValue, forKey: Constants.Keys.lastDeepScanDate) }
+    }
+
     // MARK: - Book Position Tracking
 
     /// Store position snapshots for all books
@@ -141,6 +146,7 @@ final class SettingsStore: Sendable {
             Constants.Keys.blockedApps,
             Constants.Keys.cachedProgress,
             Constants.Keys.lastSyncTime,
+            Constants.Keys.lastDeepScanDate,
             Constants.Keys.bookPositions,
             Constants.Keys.dailyStats,
             Constants.Keys.bookMetadataCache
