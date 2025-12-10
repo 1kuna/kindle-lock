@@ -158,6 +158,10 @@ final class AppState {
             // Get metadata cache
             let metadataCache = settings.bookMetadataCache
 
+            // For incremental UI updates during refresh
+            let stats = settings.dailyStats
+            var runningPercentageRead: Double = 0
+
             // Fetch position and metadata for each book
             var enrichedBooks: [KindleBook] = []
             for (index, book) in books.enumerated() {
@@ -173,7 +177,24 @@ final class AppState {
                     enriched.startPosition = result.startPosition
                     enriched.endPosition = result.endPosition
                 }
+
+                // Calculate running progress for incremental UI updates
+                if enriched.currentPosition != nil {
+                    let currentPercent = enriched.calculatedPercentage
+                    let startPercent = stats?.startOfDayPercentages[book.asin] ?? currentPercent
+                    let delta = currentPercent - startPercent
+                    if delta > 0 {
+                        runningPercentageRead += delta
+                    }
+                }
+
                 enrichedBooks.append(enriched)
+
+                // Update UI with running total
+                todayProgress = TodayProgress(
+                    percentageRead: runningPercentageRead,
+                    percentageGoal: settings.dailyPercentageGoal
+                )
             }
 
             // Cache any new metadata
