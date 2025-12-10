@@ -101,7 +101,11 @@ struct ConfirmationView: View {
     // MARK: - Start Button
 
     private var startButton: some View {
-        Button(action: startApp) {
+        Button {
+            Task {
+                await startApp()
+            }
+        } label: {
             HStack(spacing: 12) {
                 Image(systemName: "sparkles")
                 Text("Start Using KindleLock")
@@ -116,7 +120,10 @@ struct ConfirmationView: View {
 
     // MARK: - Actions
 
-    private func startApp() {
+    private func startApp() async {
+        // Request notification permission (non-blocking, don't care about result)
+        _ = await NotificationService.shared.requestAuthorization()
+
         withAnimation(.spring(duration: 0.5)) {
             appState.completeSetup()
         }

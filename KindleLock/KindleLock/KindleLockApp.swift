@@ -88,5 +88,6 @@ private func handleBackgroundRefresh(task: BGAppRefreshTask) async {
     }
 
     await refreshTask.value
+    // Note: Notification is sent from calculateTodayProgress() when goal is first met
     task.setTaskCompleted(success: true)
 }

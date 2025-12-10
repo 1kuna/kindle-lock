@@ -306,11 +306,17 @@ final class AppState {
         // Check if goal was just met
         let goal = settings.dailyPercentageGoal
         var goalMetAt = stats?.goalMetAt
-        if totalPercentageRead >= goal && goalMetAt == nil {
+        let goalJustMet = totalPercentageRead >= goal && goalMetAt == nil
+        if goalJustMet {
             let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "HH:mm"
             goalMetAt = timeFormatter.string(from: Date())
             logger.log(.progress, "GOAL MET at \(goalMetAt ?? "?")")
+
+            // Send notification for goal achievement (foreground case)
+            Task {
+                await NotificationService.shared.sendGoalAchievedNotification()
+            }
         }
 
         // Log summary

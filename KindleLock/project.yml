@@ -28,6 +28,10 @@ targets:
           - "**/*.entitlements"
     entitlements:
       path: KindleLock/KindleLock.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.kindlelock.app
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kindlelock.app
@@ -55,6 +59,9 @@ targets:
           - "**/*.entitlements"
     entitlements:
       path: ShieldConfiguration/ShieldConfiguration.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.kindlelock.app
     info:
       path: ShieldConfiguration/Info.plist
     settings:

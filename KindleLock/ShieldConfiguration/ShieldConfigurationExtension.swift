@@ -8,41 +8,36 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     // MARK: - Application Shields
 
     override func configuration(shielding application: Application) -> ShieldConfiguration {
-        makeShieldConfiguration(
-            subtitle: "Complete your daily reading goal to unlock this app."
-        )
+        makeShieldConfiguration(isWebDomain: false)
     }
 
     override func configuration(
         shielding application: Application,
         in category: ActivityCategory
     ) -> ShieldConfiguration {
-        makeShieldConfiguration(
-            subtitle: "Complete your daily reading goal to unlock this app."
-        )
+        makeShieldConfiguration(isWebDomain: false)
     }
 
     // MARK: - Web Domain Shields
 
     override func configuration(shielding webDomain: WebDomain) -> ShieldConfiguration {
-        makeShieldConfiguration(
-            subtitle: "Complete your daily reading goal to access this website."
-        )
+        makeShieldConfiguration(isWebDomain: true)
     }
 
     override func configuration(
         shielding webDomain: WebDomain,
         in category: ActivityCategory
     ) -> ShieldConfiguration {
-        makeShieldConfiguration(
-            subtitle: "Complete your daily reading goal to access this website."
-        )
+        makeShieldConfiguration(isWebDomain: true)
     }
 
     // MARK: - Shield Configuration Builder
 
-    private func makeShieldConfiguration(subtitle: String) -> ShieldConfiguration {
-        ShieldConfiguration(
+    private func makeShieldConfiguration(isWebDomain: Bool) -> ShieldConfiguration {
+        let progress = ProgressReader.readCachedProgress()
+        let subtitle = buildSubtitle(progress: progress, isWebDomain: isWebDomain)
+
+        return ShieldConfiguration(
             backgroundBlurStyle: .systemUltraThinMaterial,
             backgroundColor: UIColor.systemBackground.withAlphaComponent(0.8),
             icon: UIImage(systemName: "book.closed.fill"),
@@ -64,5 +59,22 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: UIColor.systemBlue
             )
         )
+    }
+
+    private func buildSubtitle(progress: ShieldTodayProgress?, isWebDomain: Bool) -> String {
+        let baseText = isWebDomain
+            ? "Complete your daily reading goal to access this website."
+            : "Complete your daily reading goal to unlock this app."
+
+        guard let progress = progress else {
+            return baseText
+        }
+
+        // Format: "3.2% of 5% goal"
+        let readFormatted = String(format: "%.1f", progress.percentageRead)
+        let goalFormatted = String(format: "%.0f", progress.percentageGoal)
+        let progressText = "\(readFormatted)% of \(goalFormatted)% goal"
+
+        return "\(progressText)\n\(baseText)"
     }
 }

@@ -3,14 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1033A4ECD322DE50C154ACF3 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B3276B813AC192770D00F1 /* NotificationService.swift */; };
 		17B7F4FC1ACCF9768D41F03D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1645B3214F001E812145D6A8 /* Assets.xcassets */; };
 		1B234F66111C122402C84F3E /* KindleAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 9D2F3CED522753897FD45F50 /* KindleAPI */; };
 		23F8CC8B65E0C2BDC0CE16DE /* KindleAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */; };
 		24EFBE58CB8E0A436C08F66F /* AmazonLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEB0C94A7812CB885D2D61D /* AmazonLoginView.swift */; };
+		49420CB7069F04AAD4E91515 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBE7923E86B29FC257921C3 /* DebugLogger.swift */; };
 		4DF64EEEE57F139158BAA7FC /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE75FA122BE3E792BBDFD4D /* GlassCard.swift */; };
 		546B8D59AF78971E463367E5 /* KindleAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF068F9EF8A288829CF30628 /* KindleAuthService.swift */; };
 		554374D58A22FA88970B5DEE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98876D9DEFD408E98DD30CD0 /* ContentView.swift */; };
@@ -21,7 +23,9 @@
 		65794ABFBD15E2427293B8A3 /* ShieldManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */; };
 		67BE42DE09AA952783320752 /* KindleLockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BDBDCAC9F676F3DD1D52D6 /* KindleLockApp.swift */; };
 		694D8CE659D81D6908222D67 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB73AC2E1A0F02B6A84D45C /* AppState.swift */; };
+		744AE0B46C61190185449070 /* DebugLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE8525320DBCF4EB306BBEB /* DebugLogView.swift */; };
 		7920EBA86F230730DF30BD7D /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */; };
+		7A00703C4D726473D260B45E /* SharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C2F5EA9FF33650585AF791 /* SharedTypes.swift */; };
 		7F324FD352A0F185678A8D61 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A43F7E3B6EAF8EEF64F89A /* ProgressRingView.swift */; };
 		80B61EC3C60313733E579E61 /* ShieldConfigurationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */; };
 		9DAC6940A7FF880ADF34475E /* ConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA8CE22C76F9A02F2DD79E1 /* ConfirmationView.swift */; };
@@ -34,8 +38,6 @@
 		E3DB9C4216B7B77E67027DC5 /* ReadingProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F54693F717EADF586E47463 /* ReadingProgress.swift */; };
 		E4A53434111FB52F6A66C996 /* ShieldActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2847375844AE8327491B4342 /* ShieldActionExtension.swift */; };
 		F5237B9CF9AD4CD6B0C985CD /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E71C5D6395EFACEFB27B7F /* KeychainService.swift */; };
-		DBGLOG001A1B2C3D4E5F6A7B /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */; };
-		DBGVIEW01A1B2C3D4E5F6A7B /* DebugLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,13 +74,14 @@
 
 /* Begin PBXFileReference section */
 		01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationExtension.swift; sourceTree = "<group>"; };
+		09C2F5EA9FF33650585AF791 /* SharedTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedTypes.swift; sourceTree = "<group>"; };
 		14E71C5D6395EFACEFB27B7F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		1645B3214F001E812145D6A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1CE75FA122BE3E792BBDFD4D /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
 		1FEB0C94A7812CB885D2D61D /* AmazonLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonLoginView.swift; sourceTree = "<group>"; };
 		206E2E81EAC6B7BFDEF04EBB /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		226F6695E1720D61C1944AB6 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
-		22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		22E2CB9F9C4378D6A1707366 /* ShieldAction.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ShieldAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A43F7E3B6EAF8EEF64F89A /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
 		26BDBDCAC9F676F3DD1D52D6 /* KindleLockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleLockApp.swift; sourceTree = "<group>"; };
 		2847375844AE8327491B4342 /* ShieldActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldActionExtension.swift; sourceTree = "<group>"; };
@@ -86,23 +89,24 @@
 		373D3AB3E953B899E4764084 /* KindleAPITesterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAPITesterApp.swift; sourceTree = "<group>"; };
 		3C026A404C5ED6FB05AD3DA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3D4EA0CF8CE599E5C11286E9 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		4CE024D64E50A613FFA0E109 /* KindleLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KindleLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CE024D64E50A613FFA0E109 /* KindleLock.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KindleLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51CB2A89827F9662D15B690B /* StatusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCardView.swift; sourceTree = "<group>"; };
 		5F54693F717EADF586E47463 /* ReadingProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingProgress.swift; sourceTree = "<group>"; };
-		76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldConfiguration.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		76ACC8A5C87D080ECACFEDA6 /* ShieldConfiguration.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ShieldConfiguration.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BBE7923E86B29FC257921C3 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		98876D9DEFD408E98DD30CD0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9B5AB0E3E096A4862ADE0DC3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldManager.swift; sourceTree = "<group>"; };
+		AAE8525320DBCF4EB306BBEB /* DebugLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogView.swift; sourceTree = "<group>"; };
 		AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAPIService.swift; sourceTree = "<group>"; };
 		BB21E0DB006D889E7311BD8C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		C3B3276B813AC192770D00F1 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		CDA8CE22C76F9A02F2DD79E1 /* ConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationView.swift; sourceTree = "<group>"; };
 		DF068F9EF8A288829CF30628 /* KindleAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindleAuthService.swift; sourceTree = "<group>"; };
 		E50415FB86BE25C3E637FAAC /* AppSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSelectionView.swift; sourceTree = "<group>"; };
 		EDB73AC2E1A0F02B6A84D45C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		F355D33B7D1556057915F8DD /* KindleAPITester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KindleAPITester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
-		DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogView.swift; sourceTree = "<group>"; };
+		F355D33B7D1556057915F8DD /* KindleAPITester.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KindleAPITester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,7 +124,7 @@
 		0EE5793765B085BFCF50FB06 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				DBGVIEW02A1B2C3D4E5F6A7B /* DebugLogView.swift */,
+				AAE8525320DBCF4EB306BBEB /* DebugLogView.swift */,
 				34219F641D7640C4D8A8E9B0 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -170,6 +174,7 @@
 			isa = PBXGroup;
 			children = (
 				3C026A404C5ED6FB05AD3DA0 /* Info.plist */,
+				09C2F5EA9FF33650585AF791 /* SharedTypes.swift */,
 				01C6674778665AE11549A05B /* ShieldConfigurationExtension.swift */,
 			);
 			path = ShieldConfiguration;
@@ -210,10 +215,11 @@
 		B78E1DCDFADA3A0F41C11E7D /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				DBGLOG002A1B2C3D4E5F6A7B /* DebugLogger.swift */,
+				8BBE7923E86B29FC257921C3 /* DebugLogger.swift */,
 				14E71C5D6395EFACEFB27B7F /* KeychainService.swift */,
 				AC8891911B2D88A83C2DC5C2 /* KindleAPIService.swift */,
 				DF068F9EF8A288829CF30628 /* KindleAuthService.swift */,
+				C3B3276B813AC192770D00F1 /* NotificationService.swift */,
 				BEE0CBBEFE21E31CDD63DC68 /* SettingsStore.swift */,
 				9EF72BFCD15B1BC3D6A1818C /* ShieldManager.swift */,
 			);
@@ -358,6 +364,7 @@
 			packageReferences = (
 				1828871E19C3A6E1D740E34F /* XCRemoteSwiftPackageReference "swift-kindle" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -392,13 +399,14 @@
 				570605949694D08A88D5A617 /* Constants.swift in Sources */,
 				C1C50113B52B80D7EC4A9A03 /* ContentView.swift in Sources */,
 				5D7C8ACFC3641B2ABB945A7B /* DashboardView.swift in Sources */,
-				DBGLOG001A1B2C3D4E5F6A7B /* DebugLogger.swift in Sources */,
-				DBGVIEW01A1B2C3D4E5F6A7B /* DebugLogView.swift in Sources */,
+				744AE0B46C61190185449070 /* DebugLogView.swift in Sources */,
+				49420CB7069F04AAD4E91515 /* DebugLogger.swift in Sources */,
 				4DF64EEEE57F139158BAA7FC /* GlassCard.swift in Sources */,
 				F5237B9CF9AD4CD6B0C985CD /* KeychainService.swift in Sources */,
 				23F8CC8B65E0C2BDC0CE16DE /* KindleAPIService.swift in Sources */,
 				546B8D59AF78971E463367E5 /* KindleAuthService.swift in Sources */,
 				67BE42DE09AA952783320752 /* KindleLockApp.swift in Sources */,
+				1033A4ECD322DE50C154ACF3 /* NotificationService.swift in Sources */,
 				7F324FD352A0F185678A8D61 /* ProgressRingView.swift in Sources */,
 				E3DB9C4216B7B77E67027DC5 /* ReadingProgress.swift in Sources */,
 				7920EBA86F230730DF30BD7D /* SettingsStore.swift in Sources */,
@@ -421,6 +429,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A00703C4D726473D260B45E /* SharedTypes.swift in Sources */,
 				80B61EC3C60313733E579E61 /* ShieldConfigurationExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -455,7 +464,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -536,7 +544,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -558,7 +565,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldConfiguration/ShieldConfiguration.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShieldConfiguration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -580,7 +586,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KindleLock/KindleLock.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.kindlelock.app.refresh;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -602,7 +607,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldAction/ShieldAction.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShieldAction/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -623,7 +627,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -710,7 +713,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldAction/ShieldAction.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShieldAction/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -731,7 +733,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldConfiguration/ShieldConfiguration.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = A74G8926JQ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShieldConfiguration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
