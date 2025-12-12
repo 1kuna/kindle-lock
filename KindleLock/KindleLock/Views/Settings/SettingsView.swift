@@ -173,8 +173,7 @@ struct SettingsView: View {
                 dailyGoal = appState.percentageGoal
             }
             .onChange(of: dailyGoal) { _, newValue in
-                // Save the new goal to settings
-                SettingsStore().dailyPercentageGoal = newValue
+                appState.updateDailyGoal(newValue)
             }
             .alert("Reset Setup?", isPresented: $showingResetAlert) {
                 Button("Cancel", role: .cancel) {}

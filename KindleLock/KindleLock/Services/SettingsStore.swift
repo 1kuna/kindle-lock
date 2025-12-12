@@ -86,22 +86,6 @@ final class SettingsStore: Sendable {
         set { defaults.set(newValue, forKey: Constants.Keys.lastDeepScanDate) }
     }
 
-    // MARK: - Book Position Tracking
-
-    /// Store position snapshots for all books
-    var bookPositions: [String: Int] {
-        get {
-            guard let data = defaults.data(forKey: Constants.Keys.bookPositions) else {
-                return [:]
-            }
-            return (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]
-        }
-        set {
-            let data = try? JSONEncoder().encode(newValue)
-            defaults.set(data, forKey: Constants.Keys.bookPositions)
-        }
-    }
-
     /// Store daily stats
     var dailyStats: DailyStats? {
         get {
@@ -147,7 +131,6 @@ final class SettingsStore: Sendable {
             Constants.Keys.cachedProgress,
             Constants.Keys.lastSyncTime,
             Constants.Keys.lastDeepScanDate,
-            Constants.Keys.bookPositions,
             Constants.Keys.dailyStats,
             Constants.Keys.bookMetadataCache
         ]

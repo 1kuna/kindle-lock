@@ -48,9 +48,12 @@ final class AppState {
         self.blockedApps = settings.blockedApps
         self.isAuthenticatedState = authService.isAuthenticated
 
-        // Load cached progress if available
-        if let cached = settings.cachedProgress {
+        // Load cached progress if it matches the current effective day; otherwise discard stale cache
+        let currentDay = effectiveDay()
+        if let cached = settings.cachedProgress, cached.date == currentDay {
             self.todayProgress = cached
+        } else {
+            settings.cachedProgress = nil
         }
 
         // Subscribe to auth service changes (bridges ObservableObject to @Observable)
@@ -96,6 +99,7 @@ final class AppState {
     // MARK: - Actions
 
     /// Refresh reading progress from Kindle API
+    /// Uses parallel fetching for speed - shows simple progress indicator
     func refreshProgress() async {
         guard isAuthenticatedState else {
             lastError = "Please sign in to Amazon"
@@ -106,10 +110,20 @@ final class AppState {
         logger.log(.progress, "Background refresh started")
         isLoading = true
         lastError = nil
+        refreshProgress = RefreshProgress(isActive: true, statusMessage: "Loading library...")
 
         do {
-            // Pass metadata cache to avoid refetching S3 data
-            let books = try await kindleAPI.fetchLibraryWithProgress(metadataCache: settings.bookMetadataCache)
+            // Fetch library first to get count for progress UI
+            let library = try await kindleAPI.fetchLibrary()
+            refreshProgress?.totalBooks = library.count
+            refreshProgress?.statusMessage = "Checking \(library.count) books..."
+
+            // Pass metadata cache and pre-fetched library to avoid redundant fetches
+            // Uses parallel fetching internally for speed
+            let books = try await kindleAPI.fetchLibraryWithProgress(
+                metadataCache: settings.bookMetadataCache,
+                prefetchedBooks: library
+            )
 
             // Cache any new metadata
             updateMetadataCache(from: books)
@@ -120,7 +134,12 @@ final class AppState {
             settings.lastSyncTime = Date()
             updateShields()
 
+            refreshProgress?.isComplete = true
+            refreshProgress?.statusMessage = "Done!"
             logger.log(.progress, "Refresh complete: \(String(format: "%.2f", progress.percentageRead))% today")
+
+            // Clear progress after brief delay
+            try? await Task.sleep(for: .seconds(0.5))
         } catch let error as KindleAPIError {
             if case .unauthorized = error {
                 lastError = "Session expired. Please sign in again."
@@ -133,6 +152,7 @@ final class AppState {
             logger.log(.error, "Refresh error: \(error.localizedDescription)")
         }
 
+        refreshProgress = nil
         isLoading = false
     }
 
@@ -192,6 +212,7 @@ final class AppState {
 
                 // Update UI with running total
                 todayProgress = TodayProgress(
+                    date: effectiveDay(),
                     percentageRead: runningPercentageRead,
                     percentageGoal: settings.dailyPercentageGoal
                 )
@@ -350,6 +371,7 @@ final class AppState {
         settings.dailyStats = stats
 
         return TodayProgress(
+            date: today,
             percentageRead: totalPercentageRead,
             percentageGoal: goal,
             goalMetAt: goalMetAt
@@ -379,6 +401,44 @@ final class AppState {
         if updated {
             settings.bookMetadataCache = cache
         }
+    }
+
+    /// Update the daily reading goal and recompute current day's progress state
+    func updateDailyGoal(_ newGoal: Double) {
+        settings.dailyPercentageGoal = newGoal
+
+        let day = effectiveDay()
+        let currentRead = todayProgress?.percentageRead ?? settings.dailyStats?.percentageRead ?? 0
+        var goalMetAt = todayProgress?.goalMetAt
+
+        let goalMetNow = currentRead >= newGoal
+        if goalMetNow {
+            if goalMetAt == nil {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                goalMetAt = formatter.string(from: Date())
+            }
+        } else {
+            goalMetAt = nil
+        }
+
+        let updatedProgress = TodayProgress(
+            date: day,
+            percentageRead: currentRead,
+            percentageGoal: newGoal,
+            goalMetAt: goalMetAt
+        )
+
+        todayProgress = updatedProgress
+        settings.cachedProgress = updatedProgress
+
+        if var stats = settings.dailyStats, stats.date == day {
+            stats.percentageRead = currentRead
+            stats.goalMetAt = goalMetAt
+            settings.dailyStats = stats
+        }
+
+        updateShields()
     }
 
     /// Update the blocked apps selection

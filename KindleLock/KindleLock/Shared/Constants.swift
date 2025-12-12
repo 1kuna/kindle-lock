@@ -17,7 +17,6 @@ enum Constants {
         static let blockedApps = "blockedApps"
         static let cachedProgress = "cachedProgress"
         static let lastSyncTime = "lastSyncTime"
-        static let bookPositions = "bookPositions"
         static let dailyStats = "dailyStats"
         static let bookMetadataCache = "bookMetadataCache"
         static let lastDeepScanDate = "lastDeepScanDate"

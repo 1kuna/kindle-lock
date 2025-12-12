@@ -48,6 +48,15 @@ final class KindleAuthService: ObservableObject {
     @discardableResult
     func saveAuthData(cookies: [HTTPCookie], deviceToken: String?) -> Bool {
         do {
+            let existingDeviceToken = keychain.loadDeviceToken()
+            let resolvedDeviceToken = deviceToken ?? existingDeviceToken
+
+            guard resolvedDeviceToken != nil else {
+                authError = "Device token missing. Please try again."
+                logger.log(.error, "Auth save failed: missing device token")
+                return false
+            }
+
             try keychain.saveCookies(cookies)
 
             if let token = deviceToken {
@@ -55,7 +64,7 @@ final class KindleAuthService: ObservableObject {
                 logger.log(.auth, "Device token saved", details: "Token: \(token.prefix(20))...")
             }
 
-            let hasAuth = keychain.hasAuthCookies
+            let hasAuth = keychain.hasAuthCookies && resolvedDeviceToken != nil
             isAuthenticated = hasAuth
             authError = nil
 

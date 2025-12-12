@@ -15,11 +15,8 @@ struct TodayProgress: Codable, Equatable, Sendable {
         return min(1.0, percentageRead / percentageGoal)
     }
 
-    /// Create from local calculation
-    init(percentageRead: Double, percentageGoal: Double, goalMetAt: String? = nil) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        self.date = formatter.string(from: Date())
+    /// Create from local calculation with explicit effective day
+    init(date: String, percentageRead: Double, percentageGoal: Double, goalMetAt: String? = nil) {
         self.percentageRead = percentageRead
         self.percentageGoal = percentageGoal
         self.goalMet = percentageRead >= percentageGoal

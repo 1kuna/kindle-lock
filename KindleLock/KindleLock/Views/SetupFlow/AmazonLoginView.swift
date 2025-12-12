@@ -67,9 +67,20 @@ struct AmazonLoginView: View {
             }
 
             DispatchQueue.main.async {
+                let resolvedDeviceToken = self.deviceToken ?? self.authService.deviceToken
+
+                if hasRequiredCookies && resolvedDeviceToken == nil {
+                    self.statusMessage = "Could not capture device token. Please retry login."
+                    self.onLoginComplete(false)
+                    return
+                }
+
                 if hasRequiredCookies {
                     // Save to keychain via auth service and check if it actually succeeded
-                    let saveSuccess = self.authService.saveAuthData(cookies: amazonCookies, deviceToken: self.deviceToken)
+                    let saveSuccess = self.authService.saveAuthData(
+                        cookies: amazonCookies,
+                        deviceToken: resolvedDeviceToken
+                    )
                     self.onLoginComplete(saveSuccess)
                 } else {
                     self.onLoginComplete(false)
