@@ -49,28 +49,52 @@ final class KindleAPIService {
 
     /// Fetch library and reading progress for all books
     /// Pass in cached metadata to avoid refetching S3 metadata
-    func fetchLibraryWithProgress(metadataCache: [String: BookMetadata] = [:]) async throws -> [KindleBook] {
-        // First, get the library list
-        let books = try await fetchLibrary()
+    /// Uses parallel fetching for speed (vs sequential which took 45+ seconds)
+    /// Optionally pass pre-fetched books to avoid redundant library fetch
+    func fetchLibraryWithProgress(
+        metadataCache: [String: BookMetadata] = [:],
+        prefetchedBooks: [KindleBook]? = nil
+    ) async throws -> [KindleBook] {
+        // Use pre-fetched books or fetch fresh
+        let books: [KindleBook]
+        if let prefetched = prefetchedBooks {
+            books = prefetched
+        } else {
+            books = try await fetchLibrary()
+        }
+
+        guard !books.isEmpty else { return [] }
 
         // Ensure we have ADP token for startReading calls
         try await ensureADPToken()
 
-        // Fetch position and metadata for each book
-        var enrichedBooks: [KindleBook] = []
-        for book in books {
-            var enriched = book
-            let cachedMeta = metadataCache[book.asin]
+        // Fetch position and metadata for each book in parallel
+        // This reduces ~45 seconds (sequential) to ~10-15 seconds (parallel)
+        let enrichedResults = await withTaskGroup(of: (Int, KindleBook).self) { group in
+            for (index, book) in books.enumerated() {
+                group.addTask {
+                    var enriched = book
+                    let cachedMeta = metadataCache[book.asin]
 
-            if let result = try? await fetchReadingPositionWithMetadata(asin: book.asin, cachedMetadata: cachedMeta) {
-                enriched.currentPosition = result.position
-                enriched.startPosition = result.startPosition
-                enriched.endPosition = result.endPosition
+                    if let result = try? await self.fetchReadingPositionWithMetadata(asin: book.asin, cachedMetadata: cachedMeta) {
+                        enriched.currentPosition = result.position
+                        enriched.startPosition = result.startPosition
+                        enriched.endPosition = result.endPosition
+                    }
+                    return (index, enriched)
+                }
             }
-            enrichedBooks.append(enriched)
+
+            // Collect results
+            var indexedResults: [(Int, KindleBook)] = []
+            for await result in group {
+                indexedResults.append(result)
+            }
+            return indexedResults
         }
 
-        return enrichedBooks
+        // Sort by original index to maintain order
+        return enrichedResults.sorted { $0.0 < $1.0 }.map { $0.1 }
     }
 
     /// Fetch 20 most recent books (quick refresh for background updates)

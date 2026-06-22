@@ -17,6 +17,7 @@ struct TodayProgress: Codable, Equatable, Sendable {
 
     /// Create from local calculation with explicit effective day
     init(date: String, percentageRead: Double, percentageGoal: Double, goalMetAt: String? = nil) {
+        self.date = date
         self.percentageRead = percentageRead
         self.percentageGoal = percentageGoal
         self.goalMet = percentageRead >= percentageGoal
